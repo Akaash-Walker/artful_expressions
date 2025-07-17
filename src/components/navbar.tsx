@@ -4,6 +4,7 @@ import {Cart, GeoAlt, Person} from "react-bootstrap-icons";
 export default function Navbar() {
     return (
         <div className="flex items-center p-4">
+            <img className={"pl-4"} src="/IconOnly_Transparent_NoBuffer.png" alt="Logo" width="75" height="75"/>
             <div className="flex flex-1 justify-between">
                 <div className="flex space-x-4 pl-4">
                     <Button variant={"ghost"}>About Us</Button>
