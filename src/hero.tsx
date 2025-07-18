@@ -1,11 +1,27 @@
+import {Label} from "@/components/ui/label.tsx";
+import {Button} from "@/components/ui/button.tsx";
+
 export default function Hero() {
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-blue-500 to-blue-700 text-white">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Our Website</h1>
-            <p className="text-lg mb-8">Your journey to excellence starts here.</p>
-            <button className="px-6 py-3 bg-white text-blue-700 rounded-full shadow-lg hover:bg-gray-100 transition">
-                Get Started
-            </button>
+        <div className="relative w-full h-150 overflow-hidden">
+            <img src="/hero.jpg" alt="Hero Image" className="w-full h-full object-cover"/>
+            <div
+                className="absolute top-1/2 -left-70 -translate-y-1/2 w-250 h-250 bg-blue-400 opacity-80 rounded-full"/>
+            <div className="absolute top-1/2 left-16 -translate-y-1/2 z-10 w-125">
+                <div className={"space-y-8"}>
+                    <Label className={"text-white text-5xl md:text-7xl font-bold leading-tight"}>
+                        Find Your Happy Place
+                    </Label>
+                    <div className={"space-x-8"}>
+                        <Button>
+                            Book a Session
+                        </Button>
+                        <Button>
+                            Explore Classes
+                        </Button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
