@@ -4,6 +4,8 @@ import Navbar from "./components/navbar.tsx";
 import Hero from "./hero.tsx";
 import './main.css'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Footer from "@/components/footer.tsx";
+import About from "@/about.tsx";
 
 export default function App() {
     return (
@@ -11,8 +13,9 @@ export default function App() {
             <Navbar/>
             <Routes>
                 <Route path="/" element={<Hero/>}/>
-                {/* Add more routes here as needed */}
+                <Route path="/about" element={<About/>}/>
             </Routes>
+            <Footer/>
         </BrowserRouter>
     );
 }

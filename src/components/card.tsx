@@ -11,7 +11,7 @@ interface CardProps {
 export default function Card({title, description, image, buttonText}: CardProps) {
     return (
         <div
-            className="w-70 rounded overflow-hidden bg-[var(--secondary-pale-blue)] shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-300">
+            className="w-full max-w-xs rounded overflow-hidden bg-[var(--secondary-pale-blue)] shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-300">
             <div className={"w-3/4 justify-center mx-auto"}>
                 <img className="h-1/2 pt-10 object-contain rounded" src={image} alt={title}/>
                 <div className="px-4 py-8">

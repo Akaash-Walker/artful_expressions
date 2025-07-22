@@ -5,6 +5,7 @@ import Card from "@/components/card.tsx";
 export default function Hero() {
     return (
         <>
+            {/* Top banner */}
             <div className="relative w-full h-150 overflow-hidden">
                 <img src="/hero.jpg" alt="Hero Image" className="w-full h-full object-cover"/>
                 <div
@@ -25,8 +26,8 @@ export default function Hero() {
                     </div>
                 </div>
             </div>
-            {/*Change later with actual red color*/}
-            <div className="w-4/5 lg:w-2/3 mx-auto space-y-8">
+            {/* Main page content */}
+            <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
                     <Label className={"mt-16 pb-8 text-2xl md:text-3xl font-medium text-[var(--main-red)]"}>
                         Our Studio
@@ -41,6 +42,7 @@ export default function Hero() {
                         culpa qui officia deserunt mollit anim id est laborum.
                     </Label>
                 </div>
+                {/* Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center">
                     <Card title={"Book a Session"}
                           image={"public/girlpaint.jpg"}
