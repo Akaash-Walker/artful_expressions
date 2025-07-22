@@ -10,9 +10,9 @@ export default function Hero() {
                 <img src="/hero.jpg" alt="Hero Image" className="w-full h-full object-cover"/>
                 <div
                     className="absolute top-1/2 -left-70 -translate-y-1/2 w-250 h-250 bg-[var(--main-blue)] opacity-80 rounded-full"/>
-                <div className="absolute top-1/2 left-16 -translate-y-1/2 z-10 w-125">
+                <div className="absolute top-1/2 left-16 -translate-y-1/2 z-10 w-150">
                     <div className={"space-y-8"}>
-                        <Label className={"text-white text-5xl md:text-7xl font-bold leading-tight"}>
+                        <Label className={"text-[var(--secondary-pale-blue)] text-5xl md:text-8xl font-bold leading-tight"}>
                             Find Your Happy Place
                         </Label>
                         <div className={"space-x-8"}>
