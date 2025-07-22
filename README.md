@@ -11,5 +11,5 @@ This is the source code for Artful Expressions Paint Studio. Website link TBA.
 - Shadcn
 
 ## Credits
-- **Built by:** [Akaash Walker](https://www.linkedin.com/in/akaash-walker-1a82821a0)
-- **Designed by:** [Isabella Faulkner](https://www.linkedin.com/in/isabellafaulkner)
+- **Development by:** [Akaash Walker](https://www.linkedin.com/in/akaash-walker-1a82821a0)
+- **Design by:** [Isabella Faulkner](https://www.linkedin.com/in/isabellafaulkner)
