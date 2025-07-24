@@ -23,7 +23,7 @@ export default function Navbar() {
             <div className="flex-1 hidden md:flex justify-between">
                 <div className="flex flex-row space-x-4 pl-4">
                     <Button variant="ghost" onClick={() => navigate("/about")}>About Us</Button>
-                    <Button variant="ghost">Classes & Services</Button>
+                    <Button variant="ghost" onClick={() => navigate("/classes")}>Classes & Services</Button>
                     <Button variant="ghost">Booking</Button>
                 </div>
                 <div className="flex space-x-2">
@@ -53,7 +53,10 @@ export default function Navbar() {
                             setOpen(false);
                             navigate("/about");
                         }}>About Us</Button>
-                        <Button variant="ghost" className="w-full justify-start">Classes & Services</Button>
+                        <Button variant="ghost" className="w-full justify-start" onClick={() => {
+                            setOpen(false);
+                            navigate("/classes");
+                        }}>Classes & Services</Button>
                         <Button variant="ghost" className="w-full justify-start">Booking</Button>
                         <Button variant="ghost" className="w-full justify-start">Location</Button>
                         <Button variant="ghost" className="w-full justify-start">Account</Button>

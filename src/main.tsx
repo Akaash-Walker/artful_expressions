@@ -6,6 +6,7 @@ import './main.css'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Footer from "@/components/footer.tsx";
 import About from "@/about.tsx";
+import Classes from "@/classes.tsx";
 
 export default function App() {
     return (
@@ -14,6 +15,7 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Hero/>}/>
                 <Route path="/about" element={<About/>}/>
+                <Route path="/classes" element={<Classes/>}/>
             </Routes>
             <Footer/>
         </BrowserRouter>
