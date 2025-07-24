@@ -24,10 +24,18 @@ export default function Navbar() {
                 <div className="flex flex-row space-x-4 pl-4">
                     <Button variant="ghost" onClick={() => navigate("/about")}>About Us</Button>
                     <Button variant="ghost" onClick={() => navigate("/classes")}>Classes & Services</Button>
-                    <Button variant="ghost">Booking</Button>
+                    <Button variant="ghost" onClick={() => navigate("/booking")}>Booking</Button>
                 </div>
                 <div className="flex space-x-2">
-                    <Button variant="ghost"><GeoAlt/></Button>
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            window.location.href =
+                                "https://www.google.com/maps/place/127+Rockingham+Rd+%2318,+Derry,+NH+03038/@42.8760664,-71.3023846,17z/data=!3m1!4b1!4m6!3m5!1s0x89e25370039aaaab:0xbeabc00a025e8408!8m2!3d42.8760625!4d-71.2998097!16s%2Fg%2F11rnf9v2sy?entry=ttu&g_ep=EgoyMDI1MDcyMS4wIKXMDSoASAFQAw%3D%3D"
+                        }
+                    >
+                        <GeoAlt/>
+                    </Button>
                     <Button variant="ghost"><Person/></Button>
                     <Button variant="ghost"><Cart/></Button>
                 </div>
@@ -57,7 +65,10 @@ export default function Navbar() {
                             setOpen(false);
                             navigate("/classes");
                         }}>Classes & Services</Button>
-                        <Button variant="ghost" className="w-full justify-start">Booking</Button>
+                        <Button variant="ghost" className="w-full justify-start" onClick={() => {
+                            setOpen(false);
+                            navigate("/booking");
+                        }}>Booking</Button>
                         <Button variant="ghost" className="w-full justify-start">Location</Button>
                         <Button variant="ghost" className="w-full justify-start">Account</Button>
                         <Button variant="ghost" className="w-full justify-start">Cart</Button>

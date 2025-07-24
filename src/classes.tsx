@@ -2,6 +2,11 @@ import Banner from "@/components/banner.tsx";
 
 export default function Classes() {
     return (
-        <Banner title={"Classes & Services"}/>
+        <div>
+            <Banner title={"Classes & Services"}/>
+            <div>
+                Classes and Services content goes here.
+            </div>
+        </div>
     )
 }

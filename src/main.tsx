@@ -7,6 +7,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Footer from "@/components/footer.tsx";
 import About from "@/about.tsx";
 import Classes from "@/classes.tsx";
+import Booking from "@/booking.tsx";
 
 export default function App() {
     return (
@@ -16,6 +17,7 @@ export default function App() {
                 <Route path="/" element={<Hero/>}/>
                 <Route path="/about" element={<About/>}/>
                 <Route path="/classes" element={<Classes/>}/>
+                <Route path="/booking" element={<Booking/>}/>
             </Routes>
             <Footer/>
         </BrowserRouter>
