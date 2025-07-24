@@ -45,15 +45,15 @@ export default function Hero() {
                 {/* Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center">
                     <Card title={"Book a Session"}
-                          image={"public/girlpaint.jpg"}
+                          image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
                           buttonText={"Book Now"}/>
                     <Card title={"About Us"}
-                          image={"public/girlpaint.jpg"}
+                          image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
                           buttonText={"Learn More"}/>
                     <Card title={"Classses & Services"}
-                          image={"public/girlpaint.jpg"}
+                          image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
                           buttonText={"Explore Classes"}/>
                 </div>

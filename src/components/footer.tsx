@@ -3,7 +3,7 @@ export default function Footer() {
         <div className="w-full bg-[var(--secondary-soft-warm-beige)] py-16 px-4">
             <div className="flex flex-col md:flex-row items-start md:items-center w-full gap-y-8 md:gap-x-32 justify-center">
                 <div className="mb-4 md:mb-0 ">
-                    <img src="public/FullLogo_Transparent_NoBuffer.png" className="h-24 md:h-36 object-contain" alt="Artful Expressions Logo"/>
+                    <img src="/FullLogo_Transparent_NoBuffer.png" className="h-24 md:h-36 object-contain" alt="Artful Expressions Logo"/>
                 </div>
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-y-8 md:ml-8 md:gap-x-16">
                     <div className="flex flex-col space-y-2 leading-12 font-medium">
