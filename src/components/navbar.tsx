@@ -25,6 +25,7 @@ export default function Navbar() {
                     <Button variant="ghost" onClick={() => navigate("/about")}>About Us</Button>
                     <Button variant="ghost" onClick={() => navigate("/classes")}>Classes & Services</Button>
                     <Button variant="ghost" onClick={() => navigate("/booking")}>Booking</Button>
+                    <Button variant="ghost" onClick={() => navigate("/gallery")}>Gallery</Button>
                 </div>
                 <div className="flex space-x-2">
                     <Button
@@ -69,6 +70,10 @@ export default function Navbar() {
                             setOpen(false);
                             navigate("/booking");
                         }}>Booking</Button>
+                        <Button variant="ghost" className="w-full justify-start" onClick={() => {
+                            setOpen(false);
+                            navigate("/gallery");
+                        }}>Gallery</Button>
                         <Button variant="ghost" className="w-full justify-start">Location</Button>
                         <Button variant="ghost" className="w-full justify-start">Account</Button>
                         <Button variant="ghost" className="w-full justify-start">Cart</Button>

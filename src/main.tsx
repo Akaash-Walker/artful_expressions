@@ -8,6 +8,7 @@ import Footer from "@/components/footer.tsx";
 import About from "@/about.tsx";
 import Classes from "@/classes.tsx";
 import Booking from "@/booking.tsx";
+import Gallery from "@/gallery.tsx";
 
 export default function App() {
     return (
@@ -18,6 +19,7 @@ export default function App() {
                 <Route path="/about" element={<About/>}/>
                 <Route path="/classes" element={<Classes/>}/>
                 <Route path="/booking" element={<Booking/>}/>
+                <Route path="/gallery" element={<Gallery/>}/>
             </Routes>
             <Footer/>
         </BrowserRouter>
