@@ -1,6 +1,7 @@
 import {Label} from "@/components/ui/label.tsx";
 import Card from "@/components/card.tsx";
 import Banner from "@/components/banner.tsx";
+import Heading from "@/components/heading.tsx";
 
 export default function Hero() {
     return (
@@ -10,9 +11,7 @@ export default function Hero() {
             {/* Main page content */}
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
-                    <Label className={"mt-16 pb-8 text-2xl md:text-3xl font-medium text-[var(--main-red)]"}>
-                        Our Studio
-                    </Label>
+                    <Heading title={"Our Studio"}/>
                     <Label className={"font-normal leading-normal"}>
                         lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
                         labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
