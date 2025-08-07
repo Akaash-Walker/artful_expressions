@@ -9,7 +9,7 @@ export default function Navbar() {
 
     return (
         <div className="flex items-center p-4 md:pl-16 md:pr-16 bg-white">
-            <img className="md:mx-8 w-20 object-cover" src="/IconOnly_Transparent_NoBuffer.png" alt="Logo"
+            <img className="md:mx-8 md:w-20 w-12 object-cover" src="/IconOnly_Transparent_NoBuffer.png" alt="Logo"
                  onClick={() => navigate("/")}/>
             {/* Hamburger for small screens */}
             <button
