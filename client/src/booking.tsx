@@ -65,7 +65,8 @@ export default function Booking() {
                                             setDate(date)
                                             setOpen(false)
                                         }}
-
+                                        // disable past dates, can change threshold
+                                        disabled={(date) => date < new Date()}
                                     />
                                 </PopoverContent>
                             </Popover>
