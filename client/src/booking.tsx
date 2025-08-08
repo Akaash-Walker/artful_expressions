@@ -7,6 +7,7 @@ import {ChevronDownIcon} from "lucide-react";
 import {useState} from "react";
 import {Calendar} from "./components/ui/calendar.tsx";
 import {Label} from "./components/ui/label.tsx";
+import {loadStripe} from "@stripe/stripe-js";
 
 export default function Booking() {
     const [open, setOpen] = useState(false);
@@ -15,6 +16,47 @@ export default function Booking() {
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState<string | undefined>(undefined);
+
+    const makePayment = async () => {
+        const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || "");
+        if (!stripe) {
+            console.error("Stripe not loaded");
+            return;
+        }
+
+        const body = {
+            products: [
+                {
+                    name: selectedClass,
+                    price: 5000, // $50.00 in cents
+                    quantity: 1,
+                }
+            ],
+        }
+
+        const response = await fetch("/api/checkout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+            console.error("Failed to create checkout session");
+            return;
+        }
+        const session = await response.json();
+        const { error } = await stripe.redirectToCheckout({
+            sessionId: session.id,
+        });
+        if (error) {
+            console.error("Stripe checkout error:", error);
+            alert("An error occurred while processing your payment. Please try again.");
+        }
+        else {
+            alert("Redirecting to payment...");
+        }
+    }
 
 
     return (
@@ -97,7 +139,7 @@ export default function Booking() {
                         <div>
                             <Heading title={"Total"}/>
                             <div className="text-2xl font-bold mt-2">$50.00</div>
-                            <Button className="mt-4 w-full" onClick={() => alert("Send to Stripe...")}>
+                            <Button className="mt-4 w-full" onClick={makePayment}>
                                 Place a Deposit with Stripe
                             </Button>
                         </div>
