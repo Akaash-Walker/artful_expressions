@@ -1,6 +1,6 @@
 # Artful Expressions
 
-![Artful Expressions Logo](https://raw.githubusercontent.com/Akaash-Walker/artful_expressions/refs/heads/main/public/FullLogo_Transparent_NoBuffer.png)
+![Artful Expressions Logo](https://raw.githubusercontent.com/Akaash-Walker/artful_expressions/refs/heads/main/client/public/FullLogo_Transparent_NoBuffer.png)
 
 This is the source code for Artful Expressions Paint Studio. Website link TBA.
 
