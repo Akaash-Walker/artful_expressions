@@ -16,12 +16,12 @@ export default function Booking() {
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState<string | undefined>(undefined);
-    const [paymentType, setPaymentType] = useState<string>(undefined);
+    const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
 
 
     return (
         <div>
-            <Banner title={"Book a Session"} buttonText1={"Explore Classes"}/>
+            <Banner title={"Book a Session"} buttonText1={"Explore Classes"} route1={"/classes"}/>
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
                     <Heading title={"Choose Your Class"}/>

@@ -7,7 +7,8 @@ export default function Hero() {
     return (
         <>
             {/* Top banner */}
-            <Banner title={"Find Your Happy Place"} buttonText1={"Book a Session"} buttonText2={"Explore Classes"}/>
+            <Banner title={"Find Your Happy Place"} buttonText1={"Book a Session"} buttonText2={"Explore Classes"}
+                    route1={"/booking"} route2={"/classes"}/>
             {/* Main page content */}
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
@@ -27,15 +28,21 @@ export default function Hero() {
                     <Card title={"Book a Session"}
                           image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
-                          buttonText={"Book Now"}/>
+                          buttonText={"Book Now"}
+                          route={"/booking"}
+                    />
                     <Card title={"About Us"}
                           image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
-                          buttonText={"Learn More"}/>
-                    <Card title={"Classses & Services"}
+                          buttonText={"Learn More"}
+                          route={"/about"}
+                    />
+                    <Card title={"Classes & Services"}
                           image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
-                          buttonText={"Explore Classes"}/>
+                          buttonText={"Explore Classes"}
+                          route={"/classes"}
+                    />
                 </div>
             </div>
         </>

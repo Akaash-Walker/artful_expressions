@@ -1,14 +1,22 @@
 import {Label} from "./ui/label.tsx";
 import {Button} from "./ui/button.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface CardProps {
     title: string;
     description: string;
     image: string;
     buttonText: string;
+    route?: string;
 }
 
-export default function Card({title, description, image, buttonText}: CardProps) {
+export default function Card({title, description, image, buttonText, route}: CardProps) {
+    const navigate = useNavigate();
+
+    if (!route) {
+        route = "/"; // defaulting to home if no route is provided
+    }
+
     return (
         <div
             className="w-full max-w-xs rounded overflow-hidden bg-[var(--secondary-pale-blue)] shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-300">
@@ -19,7 +27,7 @@ export default function Card({title, description, image, buttonText}: CardProps)
                     <Label className={"font-normal text-[var(--secondary-gray)] leading-normal"}>{description}</Label>
                 </div>
                 <div className="pb-8 flex justify-center">
-                    <Button>
+                    <Button onClick={() => navigate(route)}>
                         {buttonText}
                     </Button>
                 </div>

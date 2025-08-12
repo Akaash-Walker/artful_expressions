@@ -1,14 +1,27 @@
 import {Label} from "./ui/label.tsx";
 import {Button} from "./ui/button.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface BannerProps {
     title: string;
     subtitle?: string;
     buttonText1?: string;
     buttonText2?: string;
+    route1?: string;
+    route2?: string;
 }
 
-export default function Banner({title, subtitle, buttonText1, buttonText2}: BannerProps) {
+export default function Banner({title, subtitle, buttonText1, buttonText2, route1, route2}: BannerProps) {
+    const navigate = useNavigate();
+
+    // defaulting routes to "/" if not provided
+    if (!route1){
+        route1 = "/";
+    }
+    if (!route2){
+        route2 = "/";
+    }
+
     return <div className="relative w-full md:h-150 overflow-hidden">
         <img src="/hero.jpg" alt="Hero Image" className="w-full md:h-full md:object-cover"/>
         {/* Solid blue overlay */}
@@ -29,12 +42,12 @@ export default function Banner({title, subtitle, buttonText1, buttonText2}: Bann
                 className="space-x-4 md:space-x-8 flex md:flex-row w-full md:w-auto items-center md:items-start justify-center md:justify-start"
             >
                 {buttonText1 && (
-                    <Button>
+                    <Button onClick={() => navigate(route1)}>
                         {buttonText1}
                     </Button>
                 )}
                 {buttonText2 && (
-                    <Button>
+                    <Button onClick={() => navigate(route2)}>
                         {buttonText2}
                     </Button>
                 )}
