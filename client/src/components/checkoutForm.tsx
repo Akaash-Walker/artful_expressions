@@ -12,9 +12,10 @@ interface CheckoutFormProps {
     time: number,
     className: string,
     paymentType: string
+    numAttendees: number
 }
 
-export default function CheckoutForm({date, time, className, paymentType}: CheckoutFormProps) {
+export default function CheckoutForm({date, time, className, paymentType, numAttendees}: CheckoutFormProps) {
     const fetchClientSecret = useCallback(async () => {
         // Create a Checkout Session
         // todo: need to change later from localhost to production URL
@@ -24,19 +25,19 @@ export default function CheckoutForm({date, time, className, paymentType}: Check
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                date, time, className, paymentType
+                date, time, className, paymentType, numAttendees
             })
         });
         const data = await res.json();
         return data.clientSecret;
-    }, [date, time, className, paymentType]);
+    }, [date, time, className, paymentType, numAttendees]);
 
     const options = {fetchClientSecret};
 
     return (
         <div id="checkout">
             <EmbeddedCheckoutProvider
-                key={paymentType}
+                key={`${paymentType}-${numAttendees}`}
                 stripe={stripePromise}
                 options={options}
             >

@@ -29,7 +29,8 @@ const bookingSchema = new mongoose.Schema({
     date: Date,
     time: Number,
     className: String,
-    paymentType: String
+    paymentType: String,
+    numAttendees: Number
 });
 
 // booking model
@@ -61,7 +62,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
             date: session.metadata?.date ? new Date(session.metadata.date) : undefined,
             time: session.metadata?.time,
             className: session.metadata?.className,
-            paymentType: session.metadata?.paymentType
+            paymentType: session.metadata?.paymentType,
         };
 
         // Save to MongoDB
@@ -77,7 +78,7 @@ app.use(express.json());
 
 // Endpoint to create a checkout session
 app.post('/create-checkout-session', async (req, res) => {
-    const {paymentType} = req.body;
+    const {paymentType, numAttendees} = req.body;
     if (!PRICE_MAP[paymentType]) {
         return res.status(400).json({error: "Invalid plan selected"});
     }
@@ -87,7 +88,7 @@ app.post('/create-checkout-session', async (req, res) => {
             {
                 // Provide the exact Price ID (for example, price_1234) of the product you want to sell
                 price: PRICE_MAP[paymentType],
-                quantity: 1,
+                quantity: numAttendees || 1, // Default to 1 if not provided
             },
         ],
         mode: 'payment',
@@ -96,10 +97,10 @@ app.post('/create-checkout-session', async (req, res) => {
             date: req.body.date,
             time: req.body.time,
             className: req.body.className,
-            paymentType: req.body.paymentType
+            paymentType: req.body.paymentType,
+            numAttendees: req.body.numAttendees
         }
     });
-
     res.json({clientSecret: session.client_secret});
 });
 

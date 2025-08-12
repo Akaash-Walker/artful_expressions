@@ -17,6 +17,7 @@ export default function Booking() {
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState<number | undefined>(undefined);
     const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
+    const [numAttendees, setNumAttendees] = useState<number>(1);
 
 
     return (
@@ -95,20 +96,30 @@ export default function Booking() {
                             </Select>
                         </div>
                     </div>
+                    <Heading title={"Number of Attendees"}/>
+                    <div>
+                        <Button variant={"outline"} onClick={() => setNumAttendees(Math.max(1, numAttendees - 1))}>
+                            -
+                        </Button>
+                        <span className="px-4">{numAttendees}</span>
+                        <Button variant={"outline"} onClick={() => setNumAttendees(Math.min(30, numAttendees + 1))}>
+                            +
+                        </Button>
+                    </div>
                     <Heading title={"Pay in full or deposit"}/>
                     <Select onValueChange={setPaymentType}>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select payment option"/>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="full">Pay in full - $250.00</SelectItem>
-                            <SelectItem value="deposit">Pay deposit - $50.00</SelectItem>
+                            <SelectItem value="full">Pay in full</SelectItem>
+                            <SelectItem value="deposit">Pay deposit</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
             </div>
             {selectedClass && date && time && paymentType &&
-                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time}/>
+                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time} numAttendees={numAttendees}/>
             }
         </div>
     )
