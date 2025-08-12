@@ -108,7 +108,7 @@ export default function Booking() {
                 </div>
             </div>
             {selectedClass && date && time && paymentType &&
-                <CheckoutForm paymentType={paymentType}/>
+                <CheckoutForm paymentType={paymentType} email={"example@gmail.com"} className={selectedClass} date={date} time={time}/>
             }
         </div>
     )

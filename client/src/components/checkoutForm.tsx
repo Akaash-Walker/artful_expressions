@@ -8,10 +8,14 @@ import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-j
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
 
 interface CheckoutFormProps {
-    paymentType: string;
+    email: string,
+    date: Date,
+    time: string,
+    className: string,
+    paymentType: string
 }
 
-export default function CheckoutForm({paymentType}: CheckoutFormProps) {
+export default function CheckoutForm({email, date, time, className, paymentType}: CheckoutFormProps) {
     const fetchClientSecret = useCallback(async () => {
         // Create a Checkout Session
         // todo: need to change later from localhost to production URL
@@ -21,12 +25,12 @@ export default function CheckoutForm({paymentType}: CheckoutFormProps) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                paymentType: paymentType
+                email, date, time, className, paymentType
             })
         });
         const data = await res.json();
         return data.clientSecret;
-    }, [paymentType]);
+    }, [email, date, time, className, paymentType]);
 
     const options = {fetchClientSecret};
 
