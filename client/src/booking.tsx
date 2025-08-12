@@ -16,6 +16,7 @@ export default function Booking() {
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState<string | undefined>(undefined);
+    const [paymentType, setPaymentType] = useState<string>(undefined);
 
 
     return (
@@ -94,15 +95,21 @@ export default function Booking() {
                             </Select>
                         </div>
                     </div>
-                    {selectedClass && date && time &&
-                        <div>
-                            <Heading title={"Total"}/>
-                            <div className="text-2xl font-bold mt-2">$50.00</div>
-                        </div>
-                    }
+                    <Heading title={"Pay in full or deposit"}/>
+                    <Select onValueChange={setPaymentType}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select payment option"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="full">Pay in full - $250.00</SelectItem>
+                            <SelectItem value="deposit">Pay deposit - $50.00</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
-            <CheckoutForm/>
+            {selectedClass && date && time && paymentType &&
+                <CheckoutForm paymentType={paymentType}/>
+            }
         </div>
     )
 }

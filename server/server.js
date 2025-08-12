@@ -8,18 +8,27 @@ dotenv.config({path: './server/.env'});
 const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY);
 const app = express();
 app.use(cors());
-
+app.use(express.json());
 
 const YOUR_DOMAIN = 'http://localhost:5173';
 
+const PRICE_MAP = {
+    full: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
+    deposit: "price_1RuGZw2cQ3M4p8CsV9wwyZQl"
+}
+
 /* Below are the routes, may need to move a separate file if more are added */
 app.post('/create-checkout-session', async (req, res) => {
+    const {paymentType} = req.body;
+    if (!PRICE_MAP[paymentType]) {
+        return res.status(400).json({error: "Invalid plan selected"});
+    }
     const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded',
         line_items: [
             {
                 // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-                price: 'price_1RtRtg2cQ3M4p8CsvTP7yy5A',
+                price: PRICE_MAP[paymentType],
                 quantity: 1,
             },
         ],
