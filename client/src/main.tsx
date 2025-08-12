@@ -10,6 +10,7 @@ import Classes from "./classes.tsx";
 import Booking from "./booking.tsx";
 import Gallery from "./gallery.tsx";
 import Return from "./components/return.tsx";
+import "leaflet/dist/leaflet.css";
 
 export default function App() {
     return (
