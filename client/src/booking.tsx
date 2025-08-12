@@ -15,7 +15,7 @@ export default function Booking() {
     // all needed to show total
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
     const [date, setDate] = useState<Date | undefined>(undefined);
-    const [time, setTime] = useState<string | undefined>(undefined);
+    const [time, setTime] = useState<number | undefined>(undefined);
     const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
 
 
@@ -79,18 +79,18 @@ export default function Booking() {
                             <Label htmlFor="time-picker" className="px-1">
                                 Time
                             </Label>
-                            <Select onValueChange={setTime}>
+                            <Select onValueChange={(value) => setTime(Number(value))}>
                                 <SelectTrigger className="w-32">
                                     <SelectValue placeholder="Select time"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="10:00">10:00 AM</SelectItem>
-                                    <SelectItem value="11:00">11:00 AM</SelectItem>
-                                    <SelectItem value="12:00">12:00 PM</SelectItem>
-                                    <SelectItem value="1:00">1:00 PM</SelectItem>
-                                    <SelectItem value="2:00">2:00 PM</SelectItem>
-                                    <SelectItem value="3:00">3:00 PM</SelectItem>
-                                    <SelectItem value="4:00">4:00 PM</SelectItem>
+                                    <SelectItem value="1000">10:00 AM</SelectItem>
+                                    <SelectItem value="1100">11:00 AM</SelectItem>
+                                    <SelectItem value="1200">12:00 PM</SelectItem>
+                                    <SelectItem value="1300">1:00 PM</SelectItem>
+                                    <SelectItem value="1400">2:00 PM</SelectItem>
+                                    <SelectItem value="1500">3:00 PM</SelectItem>
+                                    <SelectItem value="1600">4:00 PM</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -108,7 +108,7 @@ export default function Booking() {
                 </div>
             </div>
             {selectedClass && date && time && paymentType &&
-                <CheckoutForm paymentType={paymentType} email={"example@gmail.com"} className={selectedClass} date={date} time={time}/>
+                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time}/>
             }
         </div>
     )

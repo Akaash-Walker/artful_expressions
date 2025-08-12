@@ -27,7 +27,7 @@ mongoose.connect(process.env.MONGO_URI)
 const bookingSchema = new mongoose.Schema({
     email: String,
     date: Date,
-    time: String,
+    time: Number,
     className: String,
     paymentType: String
 });
@@ -93,7 +93,6 @@ app.post('/create-checkout-session', async (req, res) => {
         mode: 'payment',
         return_url: `${YOUR_DOMAIN}/return?session_id={CHECKOUT_SESSION_ID}`,
         metadata: {
-            email: req.body.email,
             date: req.body.date,
             time: req.body.time,
             className: req.body.className,
