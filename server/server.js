@@ -12,6 +12,7 @@ app.use(cors());
 
 const YOUR_DOMAIN = 'http://localhost:5173';
 
+/* Below are the routes, may need to move a separate file if more are added */
 app.post('/create-checkout-session', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded',

@@ -10,6 +10,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 export default function CheckoutForm() {
     const fetchClientSecret = useCallback(async () => {
         // Create a Checkout Session
+        // todo: need to change later from localhost to production URL
         const res = await fetch("http://localhost:4242/create-checkout-session", {
             method: "POST",
         });

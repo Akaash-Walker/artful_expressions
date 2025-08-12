@@ -9,12 +9,7 @@ import About from "./about.tsx";
 import Classes from "./classes.tsx";
 import Booking from "./booking.tsx";
 import Gallery from "./gallery.tsx";
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import CheckoutForm from './components/CheckoutForm';
-import Return from "./components/Return.tsx";
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
+import Return from "./components/return.tsx";
 
 export default function App() {
     return (
@@ -26,14 +21,6 @@ export default function App() {
                 <Route path="/classes" element={<Classes/>}/>
                 <Route path="/booking" element={<Booking/>}/>
                 <Route path="/gallery" element={<Gallery/>}/>
-                <Route
-                    path="/checkout"
-                    element={
-                        <Elements stripe={stripePromise}>
-                            <CheckoutForm />
-                        </Elements>
-                    }
-                />
                 <Route path={"/return"} element={<Return/>} />
             </Routes>
             <Footer/>
