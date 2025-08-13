@@ -21,6 +21,10 @@ const PRICE_MAP = {
     deposit: "price_1RuGZw2cQ3M4p8CsV9wwyZQl"
 }
 
+// Allowed class names and time slots for booking
+const ALLOWED_CLASS_NAMES = ["Kid's Birthday Party", "Sip & Paint", "Kid's Art Class", "Private Event"];
+const ALLOWED_TIME_SLOTS = [1000, 1100, 1200, 1300, 1400, 1500, 1600];
+
 // Connect to MongoDB
 if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI is not defined in the environment variables.");
@@ -109,15 +113,27 @@ app.use(express.json());
 // Endpoint to create a checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
     // extract paymentType and numAttendees from request body
-    const { paymentType, numAttendees, date, time }:
-        { paymentType: keyof typeof PRICE_MAP; numAttendees: number; date: string; time: number } = req.body;
-    if (!PRICE_MAP[paymentType]) {
-        return res.status(400).json({ error: "Invalid plan selected" });
-    }
+    const { paymentType, numAttendees, date, time, className }:
+        { paymentType: keyof typeof PRICE_MAP; numAttendees: number; date: string; time: number; className: string} = req.body;
 
-    if (!date || time === undefined) {
-        return res.status(400).json({ error: "Date and time required" });
-    }
+        // validate all client inputs
+        if (!PRICE_MAP[paymentType]) {
+            return res.status(400).json({ error: "Invalid plan selected" });
+        }
+        if (!ALLOWED_CLASS_NAMES.includes(className)) {
+            return res.status(400).json({ error: "Invalid class selected" });
+        }
+        const parsedTime = Number(time);
+        if (!ALLOWED_TIME_SLOTS.includes(parsedTime as any)) {
+            return res.status(400).json({ error: "Invalid time selected" });
+        }
+        const attendees = Number(numAttendees);
+        if (!Number.isInteger(attendees) || attendees < 1 || attendees > 30) {
+            return res.status(400).json({ error: "Invalid attendee count" });
+        }
+        if (!date) {
+            return res.status(400).json({ error: "Date and time required" });
+        }
 
     // normalize date (midnight) to match storage
     const d = new Date(date);

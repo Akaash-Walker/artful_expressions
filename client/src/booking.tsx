@@ -15,6 +15,7 @@ export default function Booking() {
 
     // time slots available for booking
     const TIME_SLOTS = [1000, 1100, 1200, 1300, 1400, 1500, 1600];
+    const CLASS_NAMES = ["Kid's Birthday Party", "Sip & Paint", "Kid's Art Class", "Private Event"];
 
     // function to format time from 24-hour to 12-hour format
     const formatTime = (t: number) => {
@@ -70,10 +71,11 @@ export default function Booking() {
                             <SelectValue placeholder="Select a class" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="painting">Painting</SelectItem>
-                            <SelectItem value="drawing">Drawing</SelectItem>
-                            <SelectItem value="sculpting">Sculpting</SelectItem>
-                            <SelectItem value="digital-art">Digital Art</SelectItem>
+                            {CLASS_NAMES.map(className => (
+                                <SelectItem key={className} value={className}>
+                                    {className}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                     <Heading title={"Choose a Date"} />
