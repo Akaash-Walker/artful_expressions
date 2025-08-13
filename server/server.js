@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
-dotenv.config({path: './server/.env'});
+dotenv.config({ path: './server/.env' });
 
 const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY);
 const app = express();
@@ -39,7 +39,7 @@ const Booking = mongoose.model('Booking', bookingSchema);
 /* Below are the routes, may need to move a separate file if more are added */
 
 // webhook to handle Stripe events, puts customer data into MongoDB
-app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
 
@@ -56,7 +56,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
         const session = event.data.object;
         console.log("Metadata from session:", session.metadata);
 
-        // Example: retrieve metadata or customer info
+        // customer data to be saved into db
         const bookingData = {
             email: session.customer_details?.email,
             date: session.metadata?.date ? new Date(session.metadata.date) : undefined,
@@ -69,7 +69,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (req, res) =
         await Booking.create(bookingData);
     }
 
-    res.json({received: true});
+    res.json({ received: true });
 });
 
 // Middleware to parse JSON bodies, needs to be AFTER the webhook route
@@ -78,21 +78,23 @@ app.use(express.json());
 
 // Endpoint to create a checkout session
 app.post('/create-checkout-session', async (req, res) => {
-    const {paymentType, numAttendees} = req.body;
+    const { paymentType, numAttendees } = req.body;
     if (!PRICE_MAP[paymentType]) {
-        return res.status(400).json({error: "Invalid plan selected"});
+        return res.status(400).json({ error: "Invalid plan selected" });
     }
     const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded',
         line_items: [
             {
-                // Provide the exact Price ID (for example, price_1234) of the product you want to sell
+                // check if paymentType matches an item in PRICE_MAP
                 price: PRICE_MAP[paymentType],
-                quantity: numAttendees || 1, // Default to 1 if not provided
+                // if paymentType is "full", numAttendees is used, otherwise it's 1
+                quantity: paymentType === "full" ? numAttendees : 1,
             },
         ],
         mode: 'payment',
         return_url: `${YOUR_DOMAIN}/return?session_id={CHECKOUT_SESSION_ID}`,
+        // adding metadata to the session for use in the webhook
         metadata: {
             date: req.body.date,
             time: req.body.time,
@@ -101,13 +103,14 @@ app.post('/create-checkout-session', async (req, res) => {
             numAttendees: req.body.numAttendees
         }
     });
-    res.json({clientSecret: session.client_secret});
+    res.json({ clientSecret: session.client_secret });
 });
 
 // Endpoint to retrieve session status
 app.get('/session-status', async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
 
+    // sending back the session status and customer email for the return page
     res.send({
         status: session.status,
         customer_email: session.customer_details.email
