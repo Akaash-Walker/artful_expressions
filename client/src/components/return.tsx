@@ -13,7 +13,7 @@ export default function Return() {
         const sessionId = urlParams.get('session_id');
 
         // todo: need to change later from localhost to production URL
-        fetch(`http://localhost:4242/session-status?session_id=${sessionId}`)
+        fetch(`http://localhost:4242/api/session-status?session_id=${sessionId}`)
             .then((res) => res.json())
             .then((data) => {
                 setStatus(data.status);

@@ -94,7 +94,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 app.use(express.json());
 
 // Endpoint to create a checkout session
-app.post('/create-checkout-session', async (req, res) => {
+app.post('/api/create-checkout-session', async (req, res) => {
     // extract paymentType and numAttendees from request body
     const { paymentType, numAttendees }: { paymentType: keyof typeof PRICE_MAP; numAttendees: number } = req.body;
     if (!PRICE_MAP[paymentType]) {
@@ -125,7 +125,7 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 // Endpoint to retrieve session status
-app.get('/session-status', async (req, res) => {
+app.get('/api/session-status', async (req, res) => {
     const sessionId = req.query.session_id as string | undefined;
 
     // Check if sessionId is provided
