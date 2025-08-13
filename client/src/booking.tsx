@@ -1,34 +1,58 @@
 import Banner from "./components/banner.tsx";
 import Heading from "./components/heading.tsx";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./components/ui/select.tsx";
-import {Popover, PopoverContent, PopoverTrigger} from "./components/ui/popover.tsx";
-import {Button} from "./components/ui/button.tsx";
-import {ChevronDownIcon} from "lucide-react";
-import {useState} from "react";
-import {Calendar} from "./components/ui/calendar.tsx";
-import {Label} from "./components/ui/label.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "./components/ui/select.tsx";
+import { Popover, PopoverContent, PopoverTrigger } from "./components/ui/popover.tsx";
+import { Button } from "./components/ui/button.tsx";
+import { ChevronDownIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Calendar } from "./components/ui/calendar.tsx";
+import { Label } from "./components/ui/label.tsx";
 import CheckoutForm from "./components/checkoutForm.tsx";
 
 export default function Booking() {
+    // used for date menu popover
     const [open, setOpen] = useState(false);
+
+    // time slots available for booking
+    const TIME_SLOTS = [1000, 1100, 1200, 1300, 1400, 1500, 1600];
+
+    // function to format time from 24-hour to 12-hour format
+    const formatTime = (t: number) => {
+        const hour = Math.floor(t / 100);
+        const suffix = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = ((hour + 11) % 12) + 1;
+        return `${displayHour}:00 ${suffix}`;
+    };
 
     // all needed to show total
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [time, setTime] = useState<number | undefined>(undefined);
+    const [bookedTimes, setBookedTimes] = useState<number[]>([]);
     const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
     const [numAttendees, setNumAttendees] = useState<number>(1);
 
+    // Fetch available dates from the server
+    useEffect(() => {
+        if (!date) {
+            return;
+        }
+
+        fetch(`http://localhost:4242/api/bookings?date=${date}`)
+            .then(res => res.json())
+            .then(data => setBookedTimes(data))
+            .catch(err => console.error(err));
+    }, [date]);
 
     return (
         <div>
-            <Banner title={"Book a Session"} buttonText1={"Explore Classes"} route1={"/classes"}/>
+            <Banner title={"Book a Session"} buttonText1={"Explore Classes"} route1={"/classes"} />
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
-                    <Heading title={"Choose Your Class"}/>
+                    <Heading title={"Choose Your Class"} />
                     <Select onValueChange={setSelectedClass}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a class"/>
+                            <SelectValue placeholder="Select a class" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="painting">Painting</SelectItem>
@@ -37,7 +61,7 @@ export default function Booking() {
                             <SelectItem value="digital-art">Digital Art</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Heading title={"Choose a Date"}/>
+                    <Heading title={"Choose a Date"} />
                     <div className="flex gap-4">
                         {/* Date picker */}
                         <div className="flex flex-col gap-3">
@@ -56,7 +80,7 @@ export default function Booking() {
                                             month: "short",
                                             year: "numeric"
                                         }) : "Select date"}
-                                        <ChevronDownIcon/>
+                                        <ChevronDownIcon />
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -82,21 +106,26 @@ export default function Booking() {
                             </Label>
                             <Select onValueChange={(value) => setTime(Number(value))}>
                                 <SelectTrigger className="w-32">
-                                    <SelectValue placeholder="Select time"/>
+                                    <SelectValue placeholder="Select time" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="1000">10:00 AM</SelectItem>
-                                    <SelectItem value="1100">11:00 AM</SelectItem>
-                                    <SelectItem value="1200">12:00 PM</SelectItem>
-                                    <SelectItem value="1300">1:00 PM</SelectItem>
-                                    <SelectItem value="1400">2:00 PM</SelectItem>
-                                    <SelectItem value="1500">3:00 PM</SelectItem>
-                                    <SelectItem value="1600">4:00 PM</SelectItem>
+                                    {TIME_SLOTS.map(slot => {
+                                        const isBooked = bookedTimes.includes(slot);
+                                        return (
+                                            <SelectItem
+                                                key={slot}
+                                                value={String(slot)}
+                                                disabled={isBooked}
+                                            >
+                                                {formatTime(slot)} {isBooked ? '(Booked)' : ''}
+                                            </SelectItem>
+                                        );
+                                    })}
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
-                    <Heading title={"Number of Attendees"}/>
+                    <Heading title={"Number of Attendees"} />
                     <div>
                         <Button variant={"outline"} onClick={() => setNumAttendees(Math.max(1, numAttendees - 1))}>
                             -
@@ -106,10 +135,10 @@ export default function Booking() {
                             +
                         </Button>
                     </div>
-                    <Heading title={"Pay in full or deposit"}/>
+                    <Heading title={"Pay in full or deposit"} />
                     <Select onValueChange={setPaymentType}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select payment option"/>
+                            <SelectValue placeholder="Select payment option" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="full">Pay in full</SelectItem>
@@ -119,7 +148,7 @@ export default function Booking() {
                 </div>
             </div>
             {selectedClass && date && time && paymentType &&
-                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time} numAttendees={numAttendees}/>
+                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time} numAttendees={numAttendees} />
             }
         </div>
     )

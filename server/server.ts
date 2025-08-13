@@ -6,10 +6,10 @@ import mongoose from 'mongoose';
 
 dotenv.config({ path: './server/.env' });
 
-if (!process.env.VITE_STRIPE_SECRET_KEY) {
-    throw new Error("VITE_STRIPE_SECRET_KEY is not defined in the environment variables.");
+if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not defined in the environment variables.");
 }
-const stripe = new Stripe(process.env.VITE_STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const app = express();
 app.use(cors());
 
@@ -144,5 +144,33 @@ app.get('/session-status', async (req, res) => {
         customer_email: session.customer_details.email
     });
 });
+
+app.get('/api/bookings', async (req, res) => {
+    try {
+        const { date } = req.query;
+        if (!date) {
+          return res.status(400).json({ error: "Date is required" });
+        }
+    
+        // Create date range for that day
+        const start = new Date(date as string);
+        start.setHours(0, 0, 0, 0);
+    
+        const end = new Date(date as string);
+        end.setHours(23, 59, 59, 999);
+    
+        // Find only bookings for that date
+        const bookings = await Booking.find({
+          date: { $gte: start, $lte: end }
+        }).select("time -_id");
+    
+        // Return an array of just the time numbers
+        res.json(bookings.map(b => b.time));
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Database query failed" });
+      }
+});
+
 
 app.listen(4242, () => console.log('Running on port 4242'));
