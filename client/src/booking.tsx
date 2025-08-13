@@ -31,17 +31,32 @@ export default function Booking() {
     const [bookedTimes, setBookedTimes] = useState<number[]>([]);
     const [paymentType, setPaymentType] = useState<string | undefined>(undefined);
     const [numAttendees, setNumAttendees] = useState<number>(1);
+    const [timesLoading, setTimesLoading] = useState<boolean>(false);
 
     // Fetch available dates from the server
     useEffect(() => {
         if (!date) {
+            setBookedTimes([]);
             return;
         }
 
+        const controller = new AbortController();
+        setTimesLoading(true);
+        // normalize date to midnight
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
         fetch(`http://localhost:4242/api/bookings?date=${date}`)
             .then(res => res.json())
-            .then(data => setBookedTimes(data))
-            .catch(err => console.error(err));
+            .then(data => {
+                setBookedTimes(data);
+                // if selected time just became booked, clear it
+                setTime(prev => prev && data.includes(prev) ? undefined : prev);
+            })
+            .catch(err => {
+                if (err.name !== 'AbortError') console.error(err);
+            })
+            .finally(() => setTimesLoading(false));
+        return () => controller.abort();
     }, [date]);
 
     return (
@@ -104,9 +119,12 @@ export default function Booking() {
                             <Label htmlFor="time-picker" className="px-1">
                                 Time
                             </Label>
-                            <Select onValueChange={(value) => setTime(Number(value))}>
+                            <Select onValueChange={(value) => {
+                                if (timesLoading) return;
+                                setTime(Number(value));
+                            }} disabled={timesLoading || !date}>
                                 <SelectTrigger className="w-32">
-                                    <SelectValue placeholder="Select time" />
+                                    <SelectValue placeholder={timesLoading ? "Loading..." : "Select time"} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {TIME_SLOTS.map(slot => {
@@ -115,7 +133,7 @@ export default function Booking() {
                                             <SelectItem
                                                 key={slot}
                                                 value={String(slot)}
-                                                disabled={isBooked}
+                                                disabled={timesLoading || isBooked}
                                             >
                                                 {formatTime(slot)} {isBooked ? '(Booked)' : ''}
                                             </SelectItem>

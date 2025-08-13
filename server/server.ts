@@ -38,6 +38,8 @@ const bookingSchema = new mongoose.Schema({
     paymentType: String,
     numAttendees: Number
 });
+// ensure one booking per date+time
+bookingSchema.index({ date: 1, time: 1 }, { unique: true }); 
 
 // booking model
 const Booking = mongoose.model('Booking', bookingSchema);
@@ -80,10 +82,20 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             time: session.metadata?.time,
             className: session.metadata?.className,
             paymentType: session.metadata?.paymentType,
+            numAttendees: session.metadata?.numAttendees ? Number(session.metadata.numAttendees) : undefined 
         };
 
         // Save to MongoDB
-        await Booking.create(bookingData);
+        try {
+            await Booking.create(bookingData);
+        } catch (e: any) {
+            if (e.code === 11000) {
+                console.warn("Duplicate booking ignored (already taken).");
+            } else {
+                console.error("DB save failed:", e);
+            }
+        }
+
     }
 
     res.json({ received: true });
@@ -93,12 +105,28 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 // to avoid parsing issues with raw body
 app.use(express.json());
 
+
 // Endpoint to create a checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
     // extract paymentType and numAttendees from request body
-    const { paymentType, numAttendees }: { paymentType: keyof typeof PRICE_MAP; numAttendees: number } = req.body;
+    const { paymentType, numAttendees, date, time }:
+        { paymentType: keyof typeof PRICE_MAP; numAttendees: number; date: string; time: number } = req.body;
     if (!PRICE_MAP[paymentType]) {
         return res.status(400).json({ error: "Invalid plan selected" });
+    }
+
+    if (!date || time === undefined) {
+        return res.status(400).json({ error: "Date and time required" });
+    }
+
+    // normalize date (midnight) to match storage
+    const d = new Date(date);
+    d.setHours(0,0,0,0);
+
+    // reject if already booked
+    const existing = await Booking.findOne({ date: d, time });
+    if (existing) {
+        return res.status(409).json({ error: "Time slot already booked" });
     }
     const session = await stripe.checkout.sessions.create({
         ui_mode: 'embedded',
@@ -114,11 +142,11 @@ app.post('/api/create-checkout-session', async (req, res) => {
         return_url: `${YOUR_DOMAIN}/return?session_id={CHECKOUT_SESSION_ID}`,
         // adding metadata to the session for use in the webhook
         metadata: {
-            date: req.body.date,
-            time: req.body.time,
+            date: d.toISOString(),
+            time: String(time),
             className: req.body.className,
-            paymentType: req.body.paymentType,
-            numAttendees: req.body.numAttendees
+            paymentType: paymentType,
+            numAttendees: String(numAttendees)
         }
     });
     res.json({ clientSecret: session.client_secret });
@@ -149,27 +177,27 @@ app.get('/api/bookings', async (req, res) => {
     try {
         const { date } = req.query;
         if (!date) {
-          return res.status(400).json({ error: "Date is required" });
+            return res.status(400).json({ error: "Date is required" });
         }
-    
+
         // Create date range for that day
         const start = new Date(date as string);
         start.setHours(0, 0, 0, 0);
-    
+
         const end = new Date(date as string);
         end.setHours(23, 59, 59, 999);
-    
+
         // Find only bookings for that date
         const bookings = await Booking.find({
-          date: { $gte: start, $lte: end }
+            date: { $gte: start, $lte: end }
         }).select("time -_id");
-    
+
         // Return an array of just the time numbers
         res.json(bookings.map(b => b.time));
-      } catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Database query failed" });
-      }
+    }
 });
 
 
