@@ -184,19 +184,6 @@ export default function Booking() {
                                             );
                                         })
                                     ))}
-
-                                    {/*{TIME_SLOTS.map(slot => {*/}
-                                    {/*    const isBooked = bookedTimes.includes(slot);*/}
-                                    {/*    return (*/}
-                                    {/*        <SelectItem*/}
-                                    {/*            key={slot}*/}
-                                    {/*            value={String(slot)}*/}
-                                    {/*            disabled={timesLoading || isBooked}*/}
-                                    {/*        >*/}
-                                    {/*            {formatTime(slot)} {isBooked ? '(Booked)' : ''}*/}
-                                    {/*        </SelectItem>*/}
-                                    {/*    );*/}
-                                    {/*})}*/}
                                 </SelectContent>
                             </Select>
                         </div>

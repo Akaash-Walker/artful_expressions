@@ -114,6 +114,7 @@ export function createApiRouter({
         };
 
         // validate all client inputs
+        // todo: fix these errors as they don't show up on the server or client
         if (!PRICE_MAP[paymentType]) {
             return res.status(400).json({ error: 'Invalid plan selected' });
         }
