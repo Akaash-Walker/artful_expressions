@@ -18,7 +18,7 @@ const YOUR_DOMAIN = 'http://localhost:5173';
 
 // Allowed class names and time slots for booking
 const ALLOWED_CLASS_NAMES = ["Kid's Birthday Party", "Sip & Paint", "Kid's Art Class", "Private Event"];
-const ALLOWED_TIME_SLOTS = [1000, 1100, 1200, 1300, 1400, 1500, 1600];
+const ALLOWED_TIME_SLOTS = [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000];
 
 // schema for booking data
 const bookingSchema = new mongoose.Schema({
