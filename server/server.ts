@@ -52,25 +52,25 @@ const Classes = mongoose.model('Classes', classesSchema);
 Classes.create([
     {
         className: "Kid's Birthday Party",
-        priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
+        priceId: 'price_1Rw6i42cQ3M4p8CsMD6uK77z',
         availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500],
         duration: 100
     },
     {
         className: "Sip & Paint",
-        priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
+        priceId: 'price_1Rw6iK2cQ3M4p8CshjVCIYUv',
         availableTimeSlots: [1700, 1800, 1900, 2000],
         duration: 200
     },
     {
         className: "Kid's Art Class",
-        priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
+        priceId: 'price_1Rw6iv2cQ3M4p8Cs41Wyelxz',
         availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600],
         duration: 300
     },
     {
         className: "Private Event",
-        priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
+        priceId: 'price_1Rw6jq2cQ3M4p8CslrM40Ejx',
         availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000],
         duration: 400
     }
@@ -94,9 +94,12 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 // Map of price IDs for different payment types (full payment or deposit)
+// todo: make more robust and allow for lower case class names
 const PRICE_MAP = {
-    full: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
-    deposit: "price_1RuGZw2cQ3M4p8CsV9wwyZQl"
+    "Kid's Birthday Party": 'price_1Rw6i42cQ3M4p8CsMD6uK77z',
+    "Sip & Paint": 'price_1Rw6iK2cQ3M4p8CshjVCIYUv',
+    "Kid's Art Class": 'price_1Rw6iv2cQ3M4p8Cs41Wyelxz',
+    "Private Event": 'price_1Rw6jq2cQ3M4p8CslrM40Ejx'
 }
 
 // validate the webhook secret

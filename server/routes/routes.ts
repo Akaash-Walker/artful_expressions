@@ -115,7 +115,7 @@ export function createApiRouter({
 
         // validate all client inputs
         // todo: fix these errors as they don't show up on the server or client
-        if (!PRICE_MAP[paymentType]) {
+        if (!PRICE_MAP[className]) {
             return res.status(400).json({ error: 'Invalid plan selected' });
         }
         if (!ALLOWED_CLASS_NAMES.includes(className)) {
@@ -146,13 +146,20 @@ export function createApiRouter({
             return res.status(409).json({ error: 'Time slot already booked' });
         }
 
+        const priceId = PRICE_MAP[className];
+        if (!priceId) {
+            return res.status(400).json({ error: 'Unable to match class name to price id' });
+        }
+
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
             line_items: [
                 {
-                    // check if paymentType matches an item in PRICE_MAP
-                    price: PRICE_MAP[paymentType],
+                    // check if classname matches an item in PRICE_MAP
+                    price: priceId,
                     // if paymentType is "full", numAttendees is used, otherwise it's 1
+                    // conveniently a deposit is just 1 attendee
+                    // todo: change deposit to be more adjustable? (percentage, fixed amount, etc.)
                     quantity: paymentType === 'full' ? attendees : 1,
                 },
             ],
