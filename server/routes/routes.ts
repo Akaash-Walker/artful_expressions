@@ -25,9 +25,10 @@ export function createWebhookRouter({
         express.raw({ type: 'application/json' }),
         async (req, res) => {
             const sig = req.headers['stripe-signature'];
-            console.error("Stripe webhook secret or signature not present");
-            if (!sig || !webhookSecret) return res.sendStatus(400);
-
+            if (!sig || !webhookSecret) {
+                console.error("Stripe webhook secret or signature not present");
+                return res.sendStatus(400);
+            }
             let event: Stripe.Event;
             try {
                 event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
