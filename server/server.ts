@@ -53,25 +53,25 @@ Classes.create([
     {
         className: "Kid's Birthday Party",
         priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
-        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500, 1600],
+        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500],
         duration: 100
     },
     {
         className: "Sip & Paint",
         priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
-        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500, 1600],
+        availableTimeSlots: [1700, 1800, 1900, 2000],
         duration: 200
     },
     {
         className: "Kid's Art Class",
         priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
-        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500, 1600],
+        availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600],
         duration: 300
     },
     {
         className: "Private Event",
         priceId: 'price_1RvD8b2cQ3M4p8Cs2oo900Rj',
-        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500, 1600],
+        availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000],
         duration: 400
     }
 

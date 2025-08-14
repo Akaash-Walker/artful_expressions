@@ -17,9 +17,6 @@ export default function Booking() {
     // used for date menu popover
     const [open, setOpen] = useState(false);
 
-    // time slots available for booking
-    const TIME_SLOTS = [1000, 1100, 1200, 1300, 1400, 1500, 1600];
-
     // function to format time from 24-hour to 12-hour format
     const formatTime = (t: number) => {
         const hour = Math.floor(t / 100);
@@ -27,6 +24,14 @@ export default function Booking() {
         const displayHour = ((hour + 11) % 12) + 1;
         return `${displayHour}:00 ${suffix}`;
     };
+
+    // Define the class info interface (same as classes schema in db)
+    interface ClassInfo {
+        className: string;
+        priceId: string;
+        availableTimeSlots: number[];
+        duration: number;
+    }
 
     // all needed to show total
     const [selectedClass, setSelectedClass] = useState<string | undefined>(undefined);
@@ -37,7 +42,7 @@ export default function Booking() {
     const [numAttendees, setNumAttendees] = useState<number>(1);
     const [timesLoading, setTimesLoading] = useState<boolean>(false);
     const [classesLoading, setClassesLoading] = useState<boolean>(true);
-    const [classNames, setClassNames] = useState<string[]>([]);
+    const [classObjs, setClassObjs] = useState<ClassInfo[]>([]);
 
     // Fetch available dates from the server
     useEffect(() => {
@@ -65,7 +70,12 @@ export default function Booking() {
         return () => controller.abort();
     }, [date]);
 
-    // runs once on mount to fetch class names
+    // clear selected time when class changes
+    useEffect (() => {
+        setTime(undefined);
+    }, [selectedClass]);
+
+    // runs once on mount to fetch class objs
     useEffect(() => {
         const controller = new AbortController();
 
@@ -74,8 +84,8 @@ export default function Booking() {
                 if (!res.ok) throw new Error(`Failed to fetch classes: ${res.status}`);
                 return res.json();
             })
-            .then((data: string[]) => {
-                setClassNames(data);
+            .then((data: ClassInfo[]) => {
+                setClassObjs(data);
                 setClassesLoading(false); // only on success
             })
             .catch((err) => {
@@ -97,9 +107,10 @@ export default function Booking() {
                             <SelectValue placeholder={classesLoading ? "Loading..." : "Select a class"}/>
                         </SelectTrigger>
                         <SelectContent>
-                            {classNames.map(className => (
-                                <SelectItem key={className} value={className}>
-                                    {className}
+                            {/* getting the class objects and extracting the class names*/}
+                            {classObjs.map((cls) => (
+                                <SelectItem key={cls.className} value={cls.className}>
+                                    {cls.className}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -159,18 +170,33 @@ export default function Booking() {
                                     <SelectValue placeholder={timesLoading ? "Loading..." : "Select time"}/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {TIME_SLOTS.map(slot => {
-                                        const isBooked = bookedTimes.includes(slot);
-                                        return (
-                                            <SelectItem
-                                                key={slot}
-                                                value={String(slot)}
-                                                disabled={timesLoading || isBooked}
-                                            >
-                                                {formatTime(slot)} {isBooked ? '(Booked)' : ''}
-                                            </SelectItem>
-                                        );
-                                    })}
+                                    {classObjs.map((cls) => (
+                                        cls.className === selectedClass && cls.availableTimeSlots.map((slot) => {
+                                            const isBooked = bookedTimes.includes(slot);
+                                            return (
+                                                <SelectItem
+                                                    key={slot}
+                                                    value={String(slot)}
+                                                    disabled={timesLoading || isBooked}
+                                                >
+                                                    {formatTime(slot)} {isBooked ? '(Booked)' : ''}
+                                                </SelectItem>
+                                            );
+                                        })
+                                    ))}
+
+                                    {/*{TIME_SLOTS.map(slot => {*/}
+                                    {/*    const isBooked = bookedTimes.includes(slot);*/}
+                                    {/*    return (*/}
+                                    {/*        <SelectItem*/}
+                                    {/*            key={slot}*/}
+                                    {/*            value={String(slot)}*/}
+                                    {/*            disabled={timesLoading || isBooked}*/}
+                                    {/*        >*/}
+                                    {/*            {formatTime(slot)} {isBooked ? '(Booked)' : ''}*/}
+                                    {/*        </SelectItem>*/}
+                                    {/*    );*/}
+                                    {/*})}*/}
                                 </SelectContent>
                             </Select>
                         </div>

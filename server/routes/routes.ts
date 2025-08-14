@@ -192,10 +192,9 @@ export function createApiRouter({
 
     // GET /api/classes
     router.get('/classes', async (req, res) => {
-        const classObjs = await Classes.find({}, 'className').lean();
-        const classNames = classObjs.map((c: any) => c.className).sort();
-        // console.log("Classnames from db: ", classNames);
-        res.send(classNames);
+        const classObjs = await Classes.find({}, 'className availableTimeSlots duration priceId').lean();
+        //console.log("class objects from db: ", classObjs);
+        res.send(classObjs);
     });
 
     return router;
