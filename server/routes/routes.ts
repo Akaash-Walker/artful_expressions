@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 type Deps = {
     stripe: Stripe;
     Booking: mongoose.Model<any>;
+    Classes: mongoose.Model<any>;
     PRICE_MAP: Record<string, string>;
     ALLOWED_CLASS_NAMES: string[];
     ALLOWED_TIME_SLOTS: number[];
@@ -77,6 +78,7 @@ export function createWebhookRouter({
 export function createApiRouter({
     stripe,
     Booking,
+    Classes,
     PRICE_MAP,
     ALLOWED_CLASS_NAMES,
     ALLOWED_TIME_SLOTS,
@@ -186,6 +188,14 @@ export function createApiRouter({
             status: session.status,
             customer_email: session.customer_details.email,
         });
+    });
+
+    // GET /api/classes
+    router.get('/classes', async (req, res) => {
+        const classObjs = await Classes.find({}, 'className').lean();
+        const classNames = classObjs.map((c: any) => c.className).sort();
+        // console.log("Classnames from db: ", classNames);
+        res.send(classNames);
     });
 
     return router;
