@@ -14,12 +14,14 @@ export default function Booking() {
     // used for date menu popover
     const [open, setOpen] = useState(false);
 
-    // function to format time from 24-hour to 12-hour format
+    // function to format time from 24-hour to 12-hour format with :00 or :30
     const formatTime = (t: number) => {
-        const hour = Math.floor(t / 100);
-        const suffix = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = ((hour + 11) % 12) + 1;
-        return `${displayHour}:00 ${suffix}`;
+        const hour24 = Math.floor(t / 100);
+        const minute = t % 100; // 0 or 30
+        const suffix = hour24 >= 12 ? 'PM' : 'AM';
+        const displayHour = ((hour24 + 11) % 12) + 1;
+        const mm = String(minute).padStart(2, '0');
+        return `${displayHour}:${mm} ${suffix}`;
     };
 
     // Define the class info interface (same as classes schema in db)

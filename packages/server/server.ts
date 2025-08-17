@@ -51,26 +51,26 @@ Classes.create([
     {
         className: "Kid's Birthday Party",
         priceId: 'price_1Rw6i42cQ3M4p8CsMD6uK77z',
-        availableTimeSlots: [1000, 1100, 1200, 1300, 1400, 1500],
-        duration: 100
+        availableTimeSlots: [900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530],
+        duration: 60 // minutes
     },
     {
         className: "Sip & Paint",
         priceId: 'price_1Rw6iK2cQ3M4p8CshjVCIYUv',
-        availableTimeSlots: [1700, 1800, 1900, 2000],
-        duration: 200
+        availableTimeSlots: [1700, 1730, 1800, 1830, 1900, 1930, 2000],
+        duration: 120 // minutes
     },
     {
         className: "Kid's Art Class",
         priceId: 'price_1Rw6iv2cQ3M4p8Cs41Wyelxz',
-        availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600],
-        duration: 300
+        availableTimeSlots: [900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600],
+        duration: 180 // minutes
     },
     {
         className: "Private Event",
         priceId: 'price_1Rw6jq2cQ3M4p8CslrM40Ejx',
-        availableTimeSlots: [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000],
-        duration: 400
+        availableTimeSlots: [900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400, 1430, 1500, 1530, 1600, 1630, 1700, 1730, 1800, 1830, 1900, 1930, 2000],
+        duration: 240 // minutes
     }
 
 ]).catch(err => {
@@ -87,7 +87,9 @@ if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI is not defined in the environment variables.");
 }
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected!"))
+    .then(async () => {
+        console.log("MongoDB connected!");
+    })
     .catch(err => console.error("Error connecting to MongoDB: ", err));
 
 // validate the webhook secret

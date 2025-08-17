@@ -19,8 +19,14 @@ type ClassDoc = {
     duration: number;
 };
 
-// Use a discrete slot step matching your time slots (e.g., 100 = 1 hour)
-const SLOT_STEP = 100;
+// Use a discrete slot size in minutes (30-minute increments)
+const SLOT_MINUTES = 30;
+
+const hhmmToMinutes = (t: number) => {
+    const h = Math.floor(t / 100);
+    const m = t % 100;
+    return h * 60 + m;
+};
 
 type WebhookDeps = {
     stripe: Stripe;
@@ -86,9 +92,9 @@ export function createWebhookRouter({
                         bookingData.date && typeof bookingData.time === 'number' && bookingData.className
                     ) {
                         const klass = await Classes.findOne({ className: bookingData.className }, 'duration').lean();
-                        const requestedDuration = (klass as { duration: number } | null)?.duration ?? SLOT_STEP;
-                        const requestedSpan = Math.max(1, Math.ceil(requestedDuration / SLOT_STEP));
-                        const requestedStartIdx = Math.floor(bookingData.time / SLOT_STEP);
+                        const requestedDuration = (klass as { duration: number } | null)?.duration ?? SLOT_MINUTES;
+                        const requestedSpan = Math.max(1, Math.ceil(requestedDuration / SLOT_MINUTES));
+                        const requestedStartIdx = Math.floor(hhmmToMinutes(bookingData.time) / SLOT_MINUTES);
                         const requestedEndIdx = requestedStartIdx + requestedSpan;
 
                         const sameDay = await Booking.find({ date: bookingData.date }, 'time className').lean();
@@ -98,9 +104,9 @@ export function createWebhookRouter({
                             const durationMap = new Map<string, number>();
                             (other as Array<{ className: string; duration: number }>).forEach(c => durationMap.set(c.className, c.duration));
                             for (const b of sameDay as Array<{ time: number; className: string }>) {
-                                const dur = durationMap.get(b.className) ?? SLOT_STEP;
-                                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
-                                const startIdx = Math.floor(b.time / SLOT_STEP);
+                                const dur = durationMap.get(b.className) ?? SLOT_MINUTES;
+                                const span = Math.max(1, Math.ceil(dur / SLOT_MINUTES));
+                                const startIdx = Math.floor(hhmmToMinutes(b.time) / SLOT_MINUTES);
                                 const endIdx = startIdx + span;
                                 const overlaps = !(requestedEndIdx <= startIdx || endIdx <= requestedStartIdx);
                                 if (overlaps) {
@@ -157,7 +163,7 @@ export function createApiRouter({
         // Load durations for all classes referenced by bookings in one query
         const classNames = Array.from(new Set((bookings as Array<{ className: string }>).map(b => b.className)));
         const bookedClasses = await Classes.find({ className: { $in: classNames } }, 'className duration').lean();
-        const durationByClass = new Map<string, number>();
+        const durationByClass = new Map<string, number>(); // minutes
         (bookedClasses as Array<{ className: string; duration: number }>).forEach(c => {
             durationByClass.set(c.className, c.duration);
         });
@@ -168,20 +174,20 @@ export function createApiRouter({
             const selected = sel as ({ availableTimeSlots: number[]; duration: number } | null);
             if (!selected) return res.json([]);
 
-            const requestedSpan = Math.max(1, Math.ceil(selected.duration / SLOT_STEP));
+            const requestedSpan = Math.max(1, Math.ceil(selected.duration / SLOT_MINUTES));
 
             // Build existing booking intervals in slot indices
             const intervals: Array<{ startIdx: number; endIdx: number }> = [];
             for (const b of bookings as Array<{ time: number; className: string }>) {
-                const dur = durationByClass.get(b.className) ?? SLOT_STEP;
-                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
-                const startIdx = Math.floor(b.time / SLOT_STEP);
+                const durMin = durationByClass.get(b.className) ?? SLOT_MINUTES;
+                const span = Math.max(1, Math.ceil(durMin / SLOT_MINUTES));
+                const startIdx = Math.floor(hhmmToMinutes(b.time) / SLOT_MINUTES);
                 intervals.push({ startIdx, endIdx: startIdx + span });
             }
 
             const blockedStarts = new Set<number>();
             for (const t of selected.availableTimeSlots) {
-                const startIdx = Math.floor(t / SLOT_STEP);
+                const startIdx = Math.floor(hhmmToMinutes(t) / SLOT_MINUTES);
                 const endIdx = startIdx + requestedSpan;
                 const overlaps = intervals.some(iv => !(endIdx <= iv.startIdx || iv.endIdx <= startIdx));
                 if (overlaps) blockedStarts.add(t);
@@ -193,12 +199,15 @@ export function createApiRouter({
         // No selected class: return slots occupied by existing bookings (expanded by each booking's duration)
         const blocked = new Set<number>();
         for (const b of bookings as Array<{ time: number; className: string }>) {
-            const duration = durationByClass.get(b.className) ?? SLOT_STEP; // default one slot if missing
-            const spanSlots = Math.max(1, Math.ceil(duration / SLOT_STEP));
-            const startIndex = Math.floor(b.time / SLOT_STEP);
+            const durMin = durationByClass.get(b.className) ?? SLOT_MINUTES; // default one slot if missing
+            const spanSlots = Math.max(1, Math.ceil(durMin / SLOT_MINUTES));
+            const startIndex = Math.floor(hhmmToMinutes(b.time) / SLOT_MINUTES);
             for (let i = 0; i < spanSlots; i++) {
-                const t = (startIndex + i) * SLOT_STEP;
-                blocked.add(t);
+                const minutes = (startIndex + i) * SLOT_MINUTES;
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                const hhmm = h * 100 + m; // returns values like 900, 930, 1000, 1030
+                blocked.add(hhmm);
             }
         }
 
@@ -255,21 +264,21 @@ export function createApiRouter({
         }
 
         // Overlap check using slot indices and durations for all bookings that day
-        const requestedSpan = Math.max(1, Math.ceil(klassLean.duration / SLOT_STEP));
-        const requestedStartIdx = Math.floor(parsedTime / SLOT_STEP);
+        const requestedSpan = Math.max(1, Math.ceil(klassLean.duration / SLOT_MINUTES));
+        const requestedStartIdx = Math.floor(hhmmToMinutes(parsedTime) / SLOT_MINUTES);
         const requestedEndIdx = requestedStartIdx + requestedSpan; // exclusive
 
         const sameDayBookings = await Booking.find({ date: d }, 'time className').lean();
         if (sameDayBookings.length) {
             const otherClassNames = Array.from(new Set((sameDayBookings as Array<{ className: string }>).map(b => b.className)));
             const otherClasses = await Classes.find({ className: { $in: otherClassNames } }, 'className duration').lean();
-            const durationMap = new Map<string, number>();
+            const durationMap = new Map<string, number>(); // minutes
             (otherClasses as Array<{ className: string; duration: number }>).forEach(c => durationMap.set(c.className, c.duration));
 
             for (const b of sameDayBookings as Array<{ time: number; className: string }>) {
-                const dur = durationMap.get(b.className) ?? SLOT_STEP;
-                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
-                const startIdx = Math.floor(b.time / SLOT_STEP);
+                const durMin = durationMap.get(b.className) ?? SLOT_MINUTES;
+                const span = Math.max(1, Math.ceil(durMin / SLOT_MINUTES));
+                const startIdx = Math.floor(hhmmToMinutes(b.time) / SLOT_MINUTES);
                 const endIdx = startIdx + span; // exclusive
                 const overlaps = !(requestedEndIdx <= startIdx || endIdx <= requestedStartIdx);
                 if (overlaps) {
