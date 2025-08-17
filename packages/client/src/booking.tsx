@@ -53,19 +53,20 @@ export default function Booking() {
         // normalize date to midnight
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
-        fetch(`http://localhost:4242/api/bookings?date=${date}`)
+        const classParam = selectedClass ? `&className=${encodeURIComponent(selectedClass)}` : "";
+        fetch(`http://localhost:4242/api/bookings?date=${date.toISOString()}${classParam}`, { signal: controller.signal })
             .then(res => res.json())
             .then(data => {
                 setBookedTimes(data);
                 // if selected time just became booked, clear it
-                setTime(prev => prev && data.includes(prev) ? undefined : prev);
+                setTime(prev => (prev != null && data.includes(prev)) ? undefined : prev);
             })
             .catch(err => {
                 if (err.name !== 'AbortError') console.error(err);
             })
             .finally(() => setTimesLoading(false));
         return () => controller.abort();
-    }, [date]);
+    }, [date, selectedClass]);
 
     // clear selected time when class changes
     useEffect (() => {

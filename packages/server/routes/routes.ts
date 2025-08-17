@@ -19,9 +19,13 @@ type ClassDoc = {
     duration: number;
 };
 
+// Use a discrete slot step matching your time slots (e.g., 100 = 1 hour)
+const SLOT_STEP = 100;
+
 type WebhookDeps = {
     stripe: Stripe;
     Booking: mongoose.Model<BookingDoc>;
+    Classes: mongoose.Model<ClassDoc>;
     webhookSecret?: string;
 };
 
@@ -36,6 +40,7 @@ type ApiDeps = {
 export function createWebhookRouter({
     stripe,
     Booking,
+    Classes,
     webhookSecret,
 }: WebhookDeps): Router {
     const router = express.Router();
@@ -76,6 +81,36 @@ export function createWebhookRouter({
                 };
 
                 try {
+                    // Guard: prevent overlaps using durations
+                    if (
+                        bookingData.date && typeof bookingData.time === 'number' && bookingData.className
+                    ) {
+                        const klass = await Classes.findOne({ className: bookingData.className }, 'duration').lean();
+                        const requestedDuration = (klass as { duration: number } | null)?.duration ?? SLOT_STEP;
+                        const requestedSpan = Math.max(1, Math.ceil(requestedDuration / SLOT_STEP));
+                        const requestedStartIdx = Math.floor(bookingData.time / SLOT_STEP);
+                        const requestedEndIdx = requestedStartIdx + requestedSpan;
+
+                        const sameDay = await Booking.find({ date: bookingData.date }, 'time className').lean();
+                        if (sameDay.length) {
+                            const names = Array.from(new Set((sameDay as Array<{ className: string }>).map(b => b.className)));
+                            const other = await Classes.find({ className: { $in: names } }, 'className duration').lean();
+                            const durationMap = new Map<string, number>();
+                            (other as Array<{ className: string; duration: number }>).forEach(c => durationMap.set(c.className, c.duration));
+                            for (const b of sameDay as Array<{ time: number; className: string }>) {
+                                const dur = durationMap.get(b.className) ?? SLOT_STEP;
+                                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
+                                const startIdx = Math.floor(b.time / SLOT_STEP);
+                                const endIdx = startIdx + span;
+                                const overlaps = !(requestedEndIdx <= startIdx || endIdx <= requestedStartIdx);
+                                if (overlaps) {
+                                    console.warn('Webhook booking prevented due to overlap');
+                                    return res.json({ received: true });
+                                }
+                            }
+                        }
+                    }
+
                     await Booking.create(bookingData);
                 } catch (e: unknown) {
                     if (e && typeof e === 'object' && 'code' in e && (e as { code?: number }).code === 11000) {
@@ -105,18 +140,50 @@ export function createApiRouter({
     // JSON body for normal API
     router.use(express.json());
 
-    // GET /api/bookings?date=...
+    // GET /api/bookings?date=...&className=...
     router.get('/bookings', async (req, res) => {
         const dateParam = String(req.query.date || '');
+        const selectedClassName = req.query.className ? String(req.query.className) : undefined;
         if (!dateParam) return res.json([]);
 
         const d = new Date(dateParam);
         if (isNaN(d.getTime())) return res.status(400).json({ error: 'Invalid date' });
         d.setHours(0, 0, 0, 0);
 
-        const bookings = await Booking.find({ date: d }, 'time').lean();
-        const times = (bookings as Array<{ time: number }>).map((b) => b.time);
-        res.json(times);
+        // Fetch all bookings for the date
+        const bookings = await Booking.find({ date: d }, 'time className').lean();
+        if (!bookings.length) return res.json([]);
+
+        // Load durations for all classes referenced by bookings in one query
+        const classNames = Array.from(new Set((bookings as Array<{ className: string }>).map(b => b.className)));
+        const bookedClasses = await Classes.find({ className: { $in: classNames } }, 'className duration').lean();
+        const durationByClass = new Map<string, number>();
+        (bookedClasses as Array<{ className: string; duration: number }>).forEach(c => {
+            durationByClass.set(c.className, c.duration);
+        });
+
+        // If a class is selected, use its available slots to filter the blocked set
+        let allowedSlotsForSelected: number[] | undefined;
+        if (selectedClassName) {
+            const sel = await Classes.findOne({ className: selectedClassName }, 'availableTimeSlots').lean();
+            allowedSlotsForSelected = sel ? (sel as { availableTimeSlots: number[] }).availableTimeSlots : undefined;
+        }
+
+        const blocked = new Set<number>();
+        for (const b of bookings as Array<{ time: number; className: string }>) {
+            const duration = durationByClass.get(b.className) ?? SLOT_STEP; // default one slot if missing
+            const spanSlots = Math.max(1, Math.ceil(duration / SLOT_STEP));
+            const startIndex = Math.floor(b.time / SLOT_STEP);
+            for (let i = 0; i < spanSlots; i++) {
+                const t = (startIndex + i) * SLOT_STEP;
+                // If filtering by selected class, only include times that belong to that class's grid
+                if (!allowedSlotsForSelected || allowedSlotsForSelected.includes(t)) {
+                    blocked.add(t);
+                }
+            }
+        }
+
+        res.json(Array.from(blocked.values()).sort((a, b) => a - b));
     });
 
     // POST /api/create-checkout-session
@@ -158,8 +225,8 @@ export function createApiRouter({
         d.setHours(0, 0, 0, 0);
 
         // validate class against DB and derive priceId + allowed time slots
-        const klass = await Classes.findOne({ className }, 'priceId availableTimeSlots').lean();
-        const klassLean = klass as ({ priceId: string; availableTimeSlots: number[] } | null);
+        const klass = await Classes.findOne({ className }, 'priceId availableTimeSlots duration').lean();
+        const klassLean = klass as ({ priceId: string; availableTimeSlots: number[]; duration: number } | null);
         if (!klassLean) {
             return res.status(400).json({ error: 'Invalid class selected' });
         }
@@ -168,10 +235,28 @@ export function createApiRouter({
             return res.status(400).json({ error: 'Invalid time selected for this class' });
         }
 
-        // Reject if already booked
-        const existing = await Booking.findOne({ date: d, time: parsedTime });
-        if (existing) {
-            return res.status(409).json({ error: 'Time slot already booked' });
+        // Overlap check using slot indices and durations for all bookings that day
+        const requestedSpan = Math.max(1, Math.ceil(klassLean.duration / SLOT_STEP));
+        const requestedStartIdx = Math.floor(parsedTime / SLOT_STEP);
+        const requestedEndIdx = requestedStartIdx + requestedSpan; // exclusive
+
+        const sameDayBookings = await Booking.find({ date: d }, 'time className').lean();
+        if (sameDayBookings.length) {
+            const otherClassNames = Array.from(new Set((sameDayBookings as Array<{ className: string }>).map(b => b.className)));
+            const otherClasses = await Classes.find({ className: { $in: otherClassNames } }, 'className duration').lean();
+            const durationMap = new Map<string, number>();
+            (otherClasses as Array<{ className: string; duration: number }>).forEach(c => durationMap.set(c.className, c.duration));
+
+            for (const b of sameDayBookings as Array<{ time: number; className: string }>) {
+                const dur = durationMap.get(b.className) ?? SLOT_STEP;
+                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
+                const startIdx = Math.floor(b.time / SLOT_STEP);
+                const endIdx = startIdx + span; // exclusive
+                const overlaps = !(requestedEndIdx <= startIdx || endIdx <= requestedStartIdx);
+                if (overlaps) {
+                    return res.status(409).json({ error: 'Selected time overlaps an existing booking' });
+                }
+            }
         }
 
         const priceId = klassLean.priceId;

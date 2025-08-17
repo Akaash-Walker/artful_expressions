@@ -101,6 +101,7 @@ app.use(
     createWebhookRouter({
         stripe,
         Booking,
+        Classes,
         webhookSecret: STRIPE_WEBHOOK_SECRET,
     })
 );
