@@ -162,13 +162,35 @@ export function createApiRouter({
             durationByClass.set(c.className, c.duration);
         });
 
-        // If a class is selected, use its available slots to filter the blocked set
-        let allowedSlotsForSelected: number[] | undefined;
+        // If a class is selected, proactively block any start time whose span would overlap existing bookings
         if (selectedClassName) {
-            const sel = await Classes.findOne({ className: selectedClassName }, 'availableTimeSlots').lean();
-            allowedSlotsForSelected = sel ? (sel as { availableTimeSlots: number[] }).availableTimeSlots : undefined;
+            const sel = await Classes.findOne({ className: selectedClassName }, 'availableTimeSlots duration').lean();
+            const selected = sel as ({ availableTimeSlots: number[]; duration: number } | null);
+            if (!selected) return res.json([]);
+
+            const requestedSpan = Math.max(1, Math.ceil(selected.duration / SLOT_STEP));
+
+            // Build existing booking intervals in slot indices
+            const intervals: Array<{ startIdx: number; endIdx: number }> = [];
+            for (const b of bookings as Array<{ time: number; className: string }>) {
+                const dur = durationByClass.get(b.className) ?? SLOT_STEP;
+                const span = Math.max(1, Math.ceil(dur / SLOT_STEP));
+                const startIdx = Math.floor(b.time / SLOT_STEP);
+                intervals.push({ startIdx, endIdx: startIdx + span });
+            }
+
+            const blockedStarts = new Set<number>();
+            for (const t of selected.availableTimeSlots) {
+                const startIdx = Math.floor(t / SLOT_STEP);
+                const endIdx = startIdx + requestedSpan;
+                const overlaps = intervals.some(iv => !(endIdx <= iv.startIdx || iv.endIdx <= startIdx));
+                if (overlaps) blockedStarts.add(t);
+            }
+
+            return res.json(Array.from(blockedStarts.values()).sort((a, b) => a - b));
         }
 
+        // No selected class: return slots occupied by existing bookings (expanded by each booking's duration)
         const blocked = new Set<number>();
         for (const b of bookings as Array<{ time: number; className: string }>) {
             const duration = durationByClass.get(b.className) ?? SLOT_STEP; // default one slot if missing
@@ -176,10 +198,7 @@ export function createApiRouter({
             const startIndex = Math.floor(b.time / SLOT_STEP);
             for (let i = 0; i < spanSlots; i++) {
                 const t = (startIndex + i) * SLOT_STEP;
-                // If filtering by selected class, only include times that belong to that class's grid
-                if (!allowedSlotsForSelected || allowedSlotsForSelected.includes(t)) {
-                    blocked.add(t);
-                }
+                blocked.add(t);
             }
         }
 
