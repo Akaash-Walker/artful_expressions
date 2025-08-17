@@ -2,15 +2,34 @@ import express, { Router } from 'express';
 import Stripe from 'stripe';
 import mongoose from 'mongoose';
 
-type Deps = {
+// Domain types for models used by the routers
+type BookingDoc = {
+    email: string;
+    date: Date;
+    time: number;
+    className: string;
+    paymentType: 'full' | 'deposit';
+    numAttendees: number;
+};
+
+type ClassDoc = {
+    className: string;
+    priceId: string;
+    availableTimeSlots: number[];
+    duration: number;
+};
+
+type WebhookDeps = {
     stripe: Stripe;
-    Booking: mongoose.Model<any>;
-    Classes: mongoose.Model<any>;
-    PRICE_MAP: Record<string, string>;
-    ALLOWED_CLASS_NAMES: string[];
-    ALLOWED_TIME_SLOTS: number[];
-    YOUR_DOMAIN: string;
+    Booking: mongoose.Model<BookingDoc>;
     webhookSecret?: string;
+};
+
+type ApiDeps = {
+    stripe: Stripe;
+    Booking: mongoose.Model<BookingDoc>;
+    Classes: mongoose.Model<ClassDoc>;
+    YOUR_DOMAIN: string;
 };
 
 // webhook router to handle Stripe events
@@ -18,7 +37,7 @@ export function createWebhookRouter({
     stripe,
     Booking,
     webhookSecret,
-}: Deps): Router {
+}: WebhookDeps): Router {
     const router = express.Router();
 
     // Important: raw body for Stripe webhook
@@ -45,12 +64,12 @@ export function createWebhookRouter({
                 const bookingDate = rawDate ? new Date(rawDate) : undefined;
                 if (bookingDate) bookingDate.setHours(0, 0, 0, 0);
 
-                const bookingData = {
-                    email: session.customer_details?.email,
+                const bookingData: Partial<BookingDoc> = {
+                    email: session.customer_details?.email ?? undefined,
                     date: bookingDate,
                     time: session.metadata?.time ? Number(session.metadata.time) : undefined,
                     className: session.metadata?.className,
-                    paymentType: session.metadata?.paymentType,
+                    paymentType: session.metadata?.paymentType as BookingDoc['paymentType'] | undefined,
                     numAttendees: session.metadata?.numAttendees
                         ? Number(session.metadata.numAttendees)
                         : undefined,
@@ -58,8 +77,8 @@ export function createWebhookRouter({
 
                 try {
                     await Booking.create(bookingData);
-                } catch (e: any) {
-                    if (e?.code === 11000) {
+                } catch (e: unknown) {
+                    if (e && typeof e === 'object' && 'code' in e && (e as { code?: number }).code === 11000) {
                         console.warn('Duplicate booking ignored (already taken).');
                     } else {
                         console.error('DB save failed:', e);
@@ -79,11 +98,8 @@ export function createApiRouter({
     stripe,
     Booking,
     Classes,
-    PRICE_MAP,
-    ALLOWED_CLASS_NAMES,
-    ALLOWED_TIME_SLOTS,
     YOUR_DOMAIN,
-}: Deps): Router {
+}: ApiDeps): Router {
     const router = express.Router();
 
     // JSON body for normal API
@@ -99,38 +115,39 @@ export function createApiRouter({
         d.setHours(0, 0, 0, 0);
 
         const bookings = await Booking.find({ date: d }, 'time').lean();
-        const times = bookings.map((b: any) => b.time);
+        const times = (bookings as Array<{ time: number }>).map((b) => b.time);
         res.json(times);
     });
 
     // POST /api/create-checkout-session
     router.post('/create-checkout-session', async (req, res) => {
         const { paymentType, numAttendees, date, time, className } = req.body as {
-            paymentType: keyof typeof PRICE_MAP;
-            numAttendees: number;
+            paymentType: 'full' | 'deposit';
+            numAttendees: unknown;
             date: string;
-            time: number;
+            time: unknown;
             className: string;
         };
 
-        // validate all client inputs
-        // todo: fix these errors as they don't show up on the server or client
-        if (!PRICE_MAP[className]) {
-            return res.status(400).json({ error: 'Invalid plan selected' });
+        // basic presence/type checks
+        if (!className) {
+            return res.status(400).json({ error: 'Class name is required' });
         }
-        if (!ALLOWED_CLASS_NAMES.includes(className)) {
-            return res.status(400).json({ error: 'Invalid class selected' });
+        if (paymentType !== 'full' && paymentType !== 'deposit') {
+            return res.status(400).json({ error: 'Invalid payment type' });
         }
+        if (!date) {
+            return res.status(400).json({ error: 'Date is required' });
+        }
+
         const parsedTime = Number(time);
-        if (!ALLOWED_TIME_SLOTS.includes(parsedTime as any)) {
+        if (!Number.isFinite(parsedTime)) {
             return res.status(400).json({ error: 'Invalid time selected' });
         }
+
         const attendees = Number(numAttendees);
         if (!Number.isInteger(attendees) || attendees < 1 || attendees > 30) {
             return res.status(400).json({ error: 'Invalid attendee count' });
-        }
-        if (!date) {
-            return res.status(400).json({ error: 'Date and time required' });
         }
 
         // normalize date (midnight) to match storage
@@ -140,26 +157,33 @@ export function createApiRouter({
         }
         d.setHours(0, 0, 0, 0);
 
+        // validate class against DB and derive priceId + allowed time slots
+        const klass = await Classes.findOne({ className }, 'priceId availableTimeSlots').lean();
+        const klassLean = klass as ({ priceId: string; availableTimeSlots: number[] } | null);
+        if (!klassLean) {
+            return res.status(400).json({ error: 'Invalid class selected' });
+        }
+        const allowedTimes = Array.isArray(klassLean.availableTimeSlots) ? klassLean.availableTimeSlots : [];
+        if (!allowedTimes.includes(parsedTime)) {
+            return res.status(400).json({ error: 'Invalid time selected for this class' });
+        }
+
         // Reject if already booked
         const existing = await Booking.findOne({ date: d, time: parsedTime });
         if (existing) {
             return res.status(409).json({ error: 'Time slot already booked' });
         }
 
-        const priceId = PRICE_MAP[className];
+        const priceId = klassLean.priceId;
         if (!priceId) {
-            return res.status(400).json({ error: 'Unable to match class name to price id' });
+            return res.status(400).json({ error: 'Class is not configured with a price' });
         }
 
         const session = await stripe.checkout.sessions.create({
             ui_mode: 'embedded',
             line_items: [
                 {
-                    // check if classname matches an item in PRICE_MAP
                     price: priceId,
-                    // if paymentType is "full", numAttendees is used, otherwise it's 1
-                    // conveniently a deposit is just 1 attendee
-                    // todo: change deposit to be more adjustable? (percentage, fixed amount, etc.)
                     quantity: paymentType === 'full' ? attendees : 1,
                 },
             ],
@@ -201,7 +225,6 @@ export function createApiRouter({
     // GET /api/classes
     router.get('/classes', async (req, res) => {
         const classObjs = await Classes.find({}, 'className availableTimeSlots duration priceId').lean();
-        //console.log("class objects from db: ", classObjs);
         res.send(classObjs);
     });
 

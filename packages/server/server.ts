@@ -18,18 +18,14 @@ const app = express();
 app.use(cors());
 const YOUR_DOMAIN = 'http://localhost:5173';
 
-// Allowed class names and time slots for booking
-const ALLOWED_CLASS_NAMES = ["Kid's Birthday Party", "Sip & Paint", "Kid's Art Class", "Private Event"];
-const ALLOWED_TIME_SLOTS = [900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000];
-
 // schema for booking data
 const bookingSchema = new mongoose.Schema({
-    email: String,
-    date: Date,
-    time: Number,
-    className: String,
-    paymentType: String,
-    numAttendees: Number
+    email: { type: String, required: true, trim: true },
+    date: { type: Date, required: true },
+    time: { type: Number, required: true, min: 0, max: 2359 },
+    className: { type: String, required: true, trim: true },
+    paymentType: { type: String, required: true, enum: ['full', 'deposit'] },
+    numAttendees: { type: Number, required: true, min: 1, max: 30 }
 });
 // ensure one booking per date+time
 bookingSchema.index({date: 1, time: 1}, {unique: true});
@@ -39,10 +35,10 @@ const Booking = mongoose.model('Booking', bookingSchema);
 
 // schema for classes
 const classesSchema = new mongoose.Schema({
-    className: String,
-    priceId: String,
-    availableTimeSlots: [Number],
-    duration: Number
+    className: { type: String, required: true, trim: true },
+    priceId: { type: String, required: true, trim: true },
+    availableTimeSlots: { type: [Number], required: true, default: [] },
+    duration: { type: Number, required: true, min: 1 }
 });
 
 // ensure one class name per class
@@ -94,33 +90,17 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected!"))
     .catch(err => console.error("Error connecting to MongoDB: ", err));
 
-
-// Map of price IDs for different payment types (full payment or deposit)
-// todo: make more robust and allow for lower case class names
-const PRICE_MAP = {
-    "Kid's Birthday Party": 'price_1Rw6i42cQ3M4p8CsMD6uK77z',
-    "Sip & Paint": 'price_1Rw6iK2cQ3M4p8CshjVCIYUv',
-    "Kid's Art Class": 'price_1Rw6iv2cQ3M4p8Cs41Wyelxz',
-    "Private Event": 'price_1Rw6jq2cQ3M4p8CslrM40Ejx'
-}
-
 // validate the webhook secret
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 if (!STRIPE_WEBHOOK_SECRET) {
     throw new Error("STRIPE_WEBHOOK_SECRET is not defined in the environment variables.");
 }
 
-
 // webhook router
 app.use(
     createWebhookRouter({
         stripe,
         Booking,
-        Classes,
-        PRICE_MAP,
-        ALLOWED_CLASS_NAMES,
-        ALLOWED_TIME_SLOTS,
-        YOUR_DOMAIN,
         webhookSecret: STRIPE_WEBHOOK_SECRET,
     })
 );
@@ -132,9 +112,6 @@ app.use(
         stripe,
         Booking,
         Classes,
-        PRICE_MAP,
-        ALLOWED_CLASS_NAMES,
-        ALLOWED_TIME_SLOTS,
         YOUR_DOMAIN,
     })
 );
