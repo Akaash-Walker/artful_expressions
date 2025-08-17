@@ -1,5 +1,4 @@
-import {lazy, Suspense, useEffect, useState} from "react";
-
+import {useEffect, useState} from "react";
 import Banner from "./components/banner.tsx";
 import Heading from "./components/heading.tsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "./components/ui/select.tsx";
@@ -9,9 +8,7 @@ import {ChevronDownIcon} from "lucide-react";
 // import {Calendar} from "./components/ui/calendar.tsx";
 import {Label} from "./components/ui/label.tsx";
 import CheckoutForm from "./components/checkoutForm.tsx";
-
-const Calendar = lazy(() => import("./components/ui/calendar.tsx").then(module => ({default: module.Calendar})));
-
+import {Calendar} from "./components/ui/calendar.tsx";
 
 export default function Booking() {
     // used for date menu popover
@@ -138,19 +135,17 @@ export default function Booking() {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                    <Suspense fallback={<div className="p-4">Loading calendar...</div>}>
                                         <Calendar
                                             mode="single"
                                             selected={date}
                                             captionLayout="dropdown"
-                                            onSelect={(date) => {
+                                            onSelect={(date: Date | undefined) => {
                                                 setDate(date)
                                                 setOpen(false)
                                             }}
                                             // disable past dates, can change threshold
-                                            disabled={(date) => date < new Date()}
+                                            disabled={(date: Date) => date < new Date()}
                                         />
-                                    </Suspense>
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -163,8 +158,8 @@ export default function Booking() {
                             <Select
                                 key={date ? date.toDateString() : "no-date"}
                                 value={time != null ? String(time) : ""}
-                                onValueChange={(value) => setTime(Number(value))}
-                                disabled={timesLoading || !date}
+                                onValueChange={(value: string) => setTime(Number(value))}
+                                disabled={timesLoading || !date || !selectedClass}
                             >
                                 <SelectTrigger className="w-32">
                                     <SelectValue placeholder={timesLoading ? "Loading..." : "Select time"}/>

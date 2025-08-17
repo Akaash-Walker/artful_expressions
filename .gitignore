@@ -7,15 +7,28 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-client/node_modules
-server/node_modules
+# Node modules (all packages)
+**/node_modules
 node_modules
+
+# Build output (all packages)
 dist
 dist-ssr
+out/
+.next/
+
+# Turborepo cache
+.turbo/
+
+# Local env files (all packages)
+**/.env
 *.local
-client/.env
-server/.env
+packages/client/.env
+packages/server/.env
 .env
+
+# pnpm store (optional)
+.pnpm-store/
 
 # Editor directories and files
 .vscode/*

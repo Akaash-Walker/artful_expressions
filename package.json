@@ -1,17 +1,43 @@
 {
+  "name": "artful_expressions",
+  "private": true,
   "devDependencies": {
-    "@types/node": "^20.19.10",
-    "concurrently": "^9.2.0",
-    "nodemon": "^3.1.4",
-    "tsx": "^4.7.0",
-    "typescript": "^5.5.0"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "turbo": "latest"
   },
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    "dev:client": "npm run dev --prefix client",
-    "dev:server": "nodemon --watch server --ext ts --exec \"tsx server/server.ts\""
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
   },
   "dependencies": {
-    "dotenv": "^17.2.1"
+    "@eslint/js": "^9.33.0",
+    "@tailwindcss/vite": "^4.1.12",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "embla-carousel-autoplay": "^8.6.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "express": "^5.1.0",
+    "globals": "^16.3.0",
+    "lucide-react": "^0.539.0",
+    "mongoose": "^8.17.1",
+    "nodemon": "^3.1.10",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.8.1",
+    "stripe": "^18.4.0",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.12",
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2"
   }
 }

@@ -3,9 +3,12 @@ import express from 'express';
 import Stripe from 'stripe';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import {createApiRouter, createWebhookRouter} from './routes/routes.js';
+import path from 'path';
+import url from 'url';
+import {createApiRouter, createWebhookRouter} from './routes/routes.ts';
 
-dotenv.config({path: './server/.env'});
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY is not defined in the environment variables.");
@@ -13,7 +16,6 @@ if (!process.env.STRIPE_SECRET_KEY) {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const app = express();
 app.use(cors());
-
 const YOUR_DOMAIN = 'http://localhost:5173';
 
 // Allowed class names and time slots for booking
