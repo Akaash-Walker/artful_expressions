@@ -24,7 +24,7 @@ export default function Hero() {
                     </Label>
                 </div>
                 {/* Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center items-start content-start">
                     <Card title={"Book a Session"}
                           image={"/girlpaint.jpg"}
                           description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
