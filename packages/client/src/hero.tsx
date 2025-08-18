@@ -13,7 +13,7 @@ export default function Hero() {
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
                     <Heading title={"Our Studio"}/>
-                    <Label className={"text-md leading-normal"}>
+                    <Label className={"font-normal text-md leading-normal"}>
                         Our studio is a vibrant space dedicated to nurturing creativity and artistic
                         expression. We offer a wide range of classes and services for all ages, from kids' birthday
                         parties, to adult sip and paint, to art classes to learn and improve. Our experienced

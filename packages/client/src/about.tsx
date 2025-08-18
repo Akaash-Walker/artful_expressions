@@ -13,7 +13,7 @@ export default function About() {
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
                     <Heading title={"Our Story"}/>
-                    <Label className={"text-md leading-normal"}>
+                    <Label className={"font-normal text-md leading-normal"}>
                         Founded in 2025, Artful Expressions is a vibrant studio dedicated to nurturing creativity and
                         artistic expression. Our mission is to provide a welcoming space for individuals of all ages to
                         explore their artistic potential through a variety of classes and services. From kids' birthday
@@ -21,7 +21,7 @@ export default function About() {
                         joy of art.
                     </Label>
                     <Heading title={"Our Mission"}/>
-                    <Label className={"text-md leading-normal"}>
+                    <Label className={"font-normal text-md leading-normal"}>
                         At Artful Expressions, our mission is to foster a love for art and creativity in a
                         supportive and inspiring environment. We believe that everyone has the potential to create and
                         express themselves through art. Our goal is to provide high-quality classes and services that

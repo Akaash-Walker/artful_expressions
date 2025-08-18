@@ -15,7 +15,7 @@ export default function ClassCard({title, description1, features, description2}:
     return (
         <div className="space-y-4">
             <Heading title={title}/>
-            <Label className="text-md leading-normal">
+            <Label className="text-md font-normal leading-normal">
                 {description1}
             </Label>
             <ul className="list-disc pl-5 mt-2">
