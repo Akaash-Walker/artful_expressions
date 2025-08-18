@@ -30,8 +30,8 @@ export default function About() {
                         engagement through creative expression.
                     </Label>
                     <Heading title={"Meet the Team"}/>
-                    <TeamCard name={"Akaash"} image={"girlpaint.jpg"}
-                              bio={"My name is Akaash and I am currently a computer science student at WPI. I love helping others find their niche in art in a comfortable, safe learning space. In my free time, I like to play volleyball with my friends and also work on some personal coding project. In fact, I built this website!"}/>
+                    <TeamCard name={"Akaash"} image={"akaash.png"}
+                              bio={"My name is Akaash and I am currently a computer science student at WPI. I love helping others find their niche in art in a comfortable, safe learning space. In my free time, I like to play volleyball with my friends and also work on some personal coding projects. In fact, I built this website!"}/>
                     <Heading title={"Find us!"}/>
                     <Map/>
                 </div>

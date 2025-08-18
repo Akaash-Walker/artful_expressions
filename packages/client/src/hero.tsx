@@ -23,7 +23,7 @@ export default function Hero() {
                     </Label>
                 </div>
                 {/* Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center items-start content-start mx-auto max-w-6xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center items-stretch">
                     <Card title={"Book a Session"}
                           image={"/girlpaint.jpg"}
                           description={"Book a session with us to explore your creativity and have fun!"}
