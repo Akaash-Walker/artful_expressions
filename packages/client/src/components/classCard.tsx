@@ -26,7 +26,7 @@ export default function ClassCard({title, description1, features, description2}:
             <Label className="text-md font-normal leading-normal">
                 {description2}
             </Label>
-            <Button className="mt-2" onClick={() => navigate("/bookings")}>
+            <Button className="mt-2" onClick={() => navigate("/booking")}>
                 Book Now
             </Button>
         </div>

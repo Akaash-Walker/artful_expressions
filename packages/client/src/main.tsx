@@ -12,11 +12,13 @@ import Gallery from "./gallery.tsx";
 import Return from "./components/return.tsx";
 import "leaflet/dist/leaflet.css";
 import NotFound from "./notFound.tsx";
+import ScrollToTop from "./scrollToTop.tsx";
 
 export default function App() {
     return (
         <BrowserRouter>
             <Navbar/>
+            <ScrollToTop/>
             <Routes>
                 <Route path="/" element={<Hero/>}/>
                 <Route path="/about" element={<About/>}/>
