@@ -1,5 +1,5 @@
 import Banner from "./components/banner.tsx";
-import ClassCard from "./components/classCard.js";
+import ClassCard from "./components/classCard.tsx";
 
 export default function Classes() {
     return (

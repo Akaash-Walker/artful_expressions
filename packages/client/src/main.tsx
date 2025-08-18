@@ -11,7 +11,7 @@ import Booking from "./booking.tsx";
 import Gallery from "./gallery.tsx";
 import Return from "./components/return.tsx";
 import "leaflet/dist/leaflet.css";
-import NotFound from "./notFound.js";
+import NotFound from "./notFound.tsx";
 
 export default function App() {
     return (

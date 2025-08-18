@@ -1,6 +1,6 @@
-import Heading from "./heading.js";
-import {Label} from "./ui/label.js";
-import {Button} from "./ui/button.js";
+import Heading from "./heading.tsx";
+import {Label} from "./ui/label.tsx";
+import {Button} from "./ui/button.tsx";
 import {useNavigate} from "react-router-dom";
 
 interface ClassCardProps {

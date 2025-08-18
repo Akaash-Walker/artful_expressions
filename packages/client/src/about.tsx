@@ -2,7 +2,7 @@ import Heading from "./components/heading.tsx";
 import Map from "./components/map.tsx";
 import BannerBottom from "./components/bannerBottom.tsx";
 import {Label} from "./components/ui/label.tsx";
-import TeamCard from "./components/teamCard.js";
+import TeamCard from "./components/teamCard.tsx";
 
 export default function About() {
     return (

@@ -1,6 +1,6 @@
 import {Label} from "./components/ui/label.tsx";
 import {useNavigate} from "react-router-dom";
-import {Button} from "./components/ui/button.js";
+import {Button} from "./components/ui/button.tsx";
 
 export default function NotFound() {
     const navigate = useNavigate();
