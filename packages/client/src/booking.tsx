@@ -56,7 +56,7 @@ export default function Booking() {
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
         const classParam = selectedClass ? `&className=${encodeURIComponent(selectedClass)}` : "";
-        fetch(`http://localhost:4242/api/bookings?date=${date.toISOString()}${classParam}`, { signal: controller.signal })
+        fetch(`http://localhost:4242/api/bookings?date=${date.toISOString()}${classParam}`, {signal: controller.signal})
             .then(res => res.json())
             .then(data => {
                 setBookedTimes(data);
@@ -71,7 +71,7 @@ export default function Booking() {
     }, [date, selectedClass]);
 
     // clear selected time when class changes
-    useEffect (() => {
+    useEffect(() => {
         setTime(undefined);
     }, [selectedClass]);
 
@@ -138,17 +138,17 @@ export default function Booking() {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={date}
-                                            captionLayout="dropdown"
-                                            onSelect={(date: Date | undefined) => {
-                                                setDate(date)
-                                                setOpen(false)
-                                            }}
-                                            // disable past dates, can change threshold
-                                            disabled={(date: Date) => date < new Date()}
-                                        />
+                                    <Calendar
+                                        mode="single"
+                                        selected={date}
+                                        captionLayout="dropdown"
+                                        onSelect={(date: Date | undefined) => {
+                                            setDate(date)
+                                            setOpen(false)
+                                        }}
+                                        // disable past dates, can change threshold
+                                        disabled={(date: Date) => date < new Date()}
+                                    />
                                 </PopoverContent>
                             </Popover>
                         </div>
@@ -209,8 +209,10 @@ export default function Booking() {
                 </div>
             </div>
             {selectedClass && date && time && paymentType &&
-                <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time}
-                              numAttendees={numAttendees}/>
+                <div className={"mb-32"}>
+                    <CheckoutForm paymentType={paymentType} className={selectedClass} date={date} time={time}
+                                  numAttendees={numAttendees}/>
+                </div>
             }
         </div>
     )

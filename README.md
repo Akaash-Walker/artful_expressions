@@ -1,11 +1,10 @@
 # Artful Expressions
 
-![Artful Expressions Logo](https://raw.githubusercontent.com/Akaash-Walker/artful_expressions/refs/heads/main/client/public/FullLogo_Transparent_NoBuffer.png)
+![Artful Expressions Logo](https://raw.githubusercontent.com/Akaash-Walker/artful_expressions/refs/heads/main/packages/client/public/FullLogo_Transparent_NoBuffer.png)
 
 This is the source code for Artful Expressions Paint Studio. Website link TBA.
 
 ## Tech Stack
-MERN Stack
 - MongoDB
 - Express
 - React
@@ -16,78 +15,52 @@ MERN Stack
 - Atlas Database for MongoDB hosting
 - Leaflet for interactive maps
 - Shadcn and Tailwind CSS for responsive and modern UI
+- Turborepo for monorepo management
 
-## Build Instructions
-
-### 1. Prerequisites
-- Node.js (LTS) & npm
-- MongoDB Atlas cluster (or local MongoDB)
+## Prerequisites
+- Node.js LTS and pnpm
+- MongoDB (Atlas or local)
 - Stripe account (test keys)
-- Git
 
-### 2. Clone the repository (SSH shown)
+## Install
 ```bash
 git clone git@github.com:Akaash-Walker/artful_expressions.git
 cd artful_expressions
+pnpm install
 ```
 
-### 3. Install dependencies
-Root:
-```bash
-npm install
+## Environment
+Create packages/server/.env
 ```
-Client:
-```bash
-cd client
-npm install
-cd ..
-```
-
-Server:
-```bash
-cd server
-npm install
-cd ..
-```
-
-### 4. Environment variables
-Create a server/.env file:
-```
-MONGODB_URI=<your_mongodb_connection_string>
+MONGO_URI=<your_mongodb_connection_string>
 STRIPE_SECRET_KEY=sk_test_***
-STRIPE_WEBHOOK_SECRET=whsec_***  # (only if using webhooks)
+STRIPE_WEBHOOK_SECRET=whsec_***
 ```
-
-Create a client/.env file:
+Create packages/client/.env
 ```
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_***
 ```
 
-### 5. Development
-Run server + client concurrently (script does so for you in root package.json):
+## Develop
+Run client and server concurrently (via Turborepo):
 ```bash
-npm run dev
+pnpm dev
 ```
-Access client (Vite) at:
-http://localhost:5173
+- Client: http://localhost:5173
+- Server: http://localhost:4242
 
-Access server (Express) at:
-http://localhost:4242
+**Note: Since DB insertion is based on Stripe webhooks, booking a class will not work without also implementing Stripe.**
 
-### 6. Stripe testing
-- Use test publishable & secret keys (prefix pk_test_, sk_test_).
-- Use test card numbers (e.g. 4242 4242 4242 4242, any future expiry, any CVC).
-- Verify your create-payment-intent endpoint returns { clientSecret }.
-
-### 7. Webhooks (optional)
-Expose local server (e.g.):
+## Stripe (test)
+- Use pk_test_/sk_test_ keys.
+- Start webhooks:
 ```bash
 stripe listen --forward-to localhost:4242/webhook
 ```
-Copy the webhook signing secret (whsec_***) into STRIPE_WEBHOOK_SECRET.
 
-
+## Notes
+- This repo uses pnpm workspaces and Turborepo. If processes don’t start, ensure you ran pnpm install at the repo root and then pnpm dev.
 
 ## Credits
-- **Development by:** [Akaash Walker](https://www.linkedin.com/in/akaash-walker-1a82821a0)
-- **Design by:** [Isabella Faulkner](https://www.linkedin.com/in/isabellafaulkner)
+- Development: [Akaash Walker](https://www.linkedin.com/in/akaash-walker-1a82821a0)
+- Design: [Isabella Faulkner](https://www.linkedin.com/in/isabellafaulkner)

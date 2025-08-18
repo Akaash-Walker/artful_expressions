@@ -11,6 +11,7 @@ import Booking from "./booking.tsx";
 import Gallery from "./gallery.tsx";
 import Return from "./components/return.tsx";
 import "leaflet/dist/leaflet.css";
+import NotFound from "./notFound.js";
 
 export default function App() {
     return (
@@ -23,6 +24,7 @@ export default function App() {
                 <Route path="/booking" element={<Booking/>}/>
                 <Route path="/gallery" element={<Gallery/>}/>
                 <Route path={"/return"} element={<Return/>} />
+                <Route path="*" element={<NotFound/>}/>
             </Routes>
             <Footer/>
         </BrowserRouter>
