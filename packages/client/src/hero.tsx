@@ -13,33 +13,32 @@ export default function Hero() {
             <div className="w-4/5 lg:w-2/3 mx-auto space-y-8 mb-24">
                 <div className={"lg:w-4/5 mx-auto"}>
                     <Heading title={"Our Studio"}/>
-                    <Label className={"font-normal leading-normal"}>
-                        lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                        esse
-                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                        culpa qui officia deserunt mollit anim id est laborum.
+                    <Label className={"text-md leading-normal"}>
+                        Our studio is a vibrant space dedicated to nurturing creativity and artistic
+                        expression. We offer a wide range of classes and services for all ages, from kids' birthday
+                        parties, to adult sip and paint, to art classes to learn and improve. Our experienced
+                        instructors are passionate about helping you discover your artistic potential in a supportive
+                        and inspiring environment. Whether you're a beginner or an experienced artist, we have something
+                        for everyone. Join us to unleash your creativity and have fun!
                     </Label>
                 </div>
                 {/* Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 justify-items-center mx-auto max-w-6xl">
                     <Card title={"Book a Session"}
                           image={"/girlpaint.jpg"}
-                          description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+                          description={"Book a session with us to explore your creativity and have fun!"}
                           buttonText={"Book Now"}
                           route={"/booking"}
                     />
                     <Card title={"About Us"}
                           image={"/girlpaint.jpg"}
-                          description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+                          description={"Learn more about our studio, our mission, and our team."}
                           buttonText={"Learn More"}
                           route={"/about"}
                     />
                     <Card title={"Classes & Services"}
                           image={"/girlpaint.jpg"}
-                          description={"lorem ipsum dolor sit amet, consectetur adipiscing elit"}
+                          description={"View our range of classes and services designed for all ages."}
                           buttonText={"Explore Classes"}
                           route={"/classes"}
                     />
