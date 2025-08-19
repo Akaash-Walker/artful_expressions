@@ -3,7 +3,8 @@
   "globalEnv": [
     "STRIPE_SECRET_KEY",
     "MONGO_URI",
-    "STRIPE_WEBHOOK_SECRET"
+    "STRIPE_WEBHOOK_SECRET",
+    "NODE_ENV"
   ],
   "tasks": {
     "build": {
