@@ -1,0 +1,12 @@
+{
+  "buildCommand": "pnpm turbo run build --filter=client",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.14.0 --activate && pnpm install --frozen-lockfile",
+  "framework": null,
+  "outputDirectory": "packages/client/dist",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

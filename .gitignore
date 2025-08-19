@@ -30,6 +30,12 @@ packages/server/.env
 # pnpm store (optional)
 .pnpm-store/
 
+# Lockfiles (prefer pnpm)
+package-lock.json
+**/package-lock.json
+yarn.lock
+**/yarn.lock
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
