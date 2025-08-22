@@ -10,6 +10,8 @@ import {Label} from "./components/ui/label.tsx";
 import CheckoutForm from "./components/checkoutForm.tsx";
 import {Calendar} from "./components/ui/calendar.tsx";
 
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4242";
+
 export default function Booking() {
     // used for date menu popover
     const [open, setOpen] = useState(false);
@@ -56,7 +58,8 @@ export default function Booking() {
         const d = new Date(date);
         d.setHours(0, 0, 0, 0);
         const classParam = selectedClass ? `&className=${encodeURIComponent(selectedClass)}` : "";
-        fetch(`http://localhost:4242/api/bookings?date=${date.toISOString()}${classParam}`, {signal: controller.signal})
+        // todo: need to change later from localhost to production URL
+        fetch(`${VITE_BACKEND_URL}/api/bookings?date=${date.toISOString()}${classParam}`, {signal: controller.signal})
             .then(res => res.json())
             .then(data => {
                 setBookedTimes(data);
@@ -78,8 +81,8 @@ export default function Booking() {
     // runs once on mount to fetch class objs
     useEffect(() => {
         const controller = new AbortController();
-
-        fetch("http://localhost:4242/api/classes", {signal: controller.signal})
+        // todo: need to change later from localhost to production URL
+        fetch(`${VITE_BACKEND_URL}/api/classes`, {signal: controller.signal})
             .then((res) => {
                 if (!res.ok) throw new Error(`Failed to fetch classes: ${res.status}`);
                 return res.json();

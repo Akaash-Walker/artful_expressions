@@ -3,6 +3,8 @@ import {Navigate} from "react-router-dom";
 import Heading from "./heading.tsx";
 import {Label} from "./ui/label.tsx";
 
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4242";
+
 export default function Return() {
     const [status, setStatus] = useState(null);
     const [customerEmail, setCustomerEmail] = useState('');
@@ -13,7 +15,7 @@ export default function Return() {
         const sessionId = urlParams.get('session_id');
 
         // todo: need to change later from localhost to production URL
-        fetch(`http://localhost:4242/api/session-status?session_id=${sessionId}`)
+        fetch(`${VITE_BACKEND_URL}/api/session-status?session_id=${sessionId}`)
             .then((res) => res.json())
             .then((data) => {
                 setStatus(data.status);

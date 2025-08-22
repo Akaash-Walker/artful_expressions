@@ -6,6 +6,7 @@ import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-j
 // recreating the `Stripe` object on every render.
 // This is your test secret API key.
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4242";
 
 interface CheckoutFormProps {
     date: Date,
@@ -19,7 +20,7 @@ export default function CheckoutForm({date, time, className, paymentType, numAtt
     const fetchClientSecret = useCallback(async () => {
         // Create a Checkout Session
         // todo: need to change later from localhost to production URL
-        const res = await fetch("http://localhost:4242/api/create-checkout-session", {
+        const res = await fetch(`${VITE_BACKEND_URL}/api/create-checkout-session`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
