@@ -5,6 +5,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
 import {fileURLToPath} from 'node:url';
+// todo: fix .js extension to make it work for both dev and build, currently only works for build
 import {createApiRouter, createWebhookRouter} from './routes/routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
