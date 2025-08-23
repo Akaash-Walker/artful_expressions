@@ -8,6 +8,7 @@
   },
   "routes": [
     { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "https://artful-expressions-backend.onrender.com/api/$1" },
     { "src": "/.*", "dest": "/index.html" }
   ]
 }
