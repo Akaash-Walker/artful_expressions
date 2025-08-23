@@ -15,7 +15,9 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "vercel-build": "pnpm turbo run build --filter=client && rm -rf dist && mkdir -p dist && cp -R packages/client/dist/* dist/"
+    "vercel-build": "pnpm turbo run build --filter=client && rm -rf dist && mkdir -p dist && cp -R packages/client/dist/* dist/",
+    "render-build": "pnpm run build",
+    "render-start": "node packages/server/dist/server.js"
   },
   "dependencies": {
     "@eslint/js": "^9.33.0",
@@ -39,6 +41,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
   }
