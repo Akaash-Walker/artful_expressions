@@ -5,7 +5,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
 import url from 'url';
-import {createApiRouter, createWebhookRouter} from './routes/routes.ts';
+import {createApiRouter, createWebhookRouter} from './routes/routes.js';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '.env') });
