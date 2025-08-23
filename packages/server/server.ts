@@ -4,11 +4,14 @@ import Stripe from 'stripe';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'path';
-import url from 'url';
+import {fileURLToPath} from 'node:url';
 import {createApiRouter, createWebhookRouter} from './routes/routes.js';
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, "..");
+
+dotenv.config({ path: path.join(projectRoot, ".env") });
 
 if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("STRIPE_SECRET_KEY is not defined in the environment variables.");
