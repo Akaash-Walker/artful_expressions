@@ -15,7 +15,6 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "vercel-build": "pnpm turbo run build --filter=client && rm -rf dist",
     "render-build": "pnpm install --frozen-lockfile && pnpm --filter=server build",
     "render-start": "pnpm --filter=server start"
   },
