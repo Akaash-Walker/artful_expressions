@@ -1,8 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "pnpm turbo run build --filter=client",
+  "buildCommand": "pnpm -w run vercel-build",
   "installCommand": "corepack enable && corepack prepare pnpm@10.14.0 --activate && pnpm install --frozen-lockfile",
-  "outputDirectory": "packages/client/dist",
+  "framework": null,
+  "outputDirectory": "dist",
   "env": {
     "NODE_ENV": "production"
   },
